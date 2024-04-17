@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wizardly_fucked_wizards/pages/find_opponent_page.dart';
 
 class FrontPage extends StatelessWidget {
   const FrontPage({super.key});
@@ -18,7 +19,12 @@ class FrontPage extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FindOpponentPage()));
+              },
               child: const Text("PLAY"),
             )
           ],

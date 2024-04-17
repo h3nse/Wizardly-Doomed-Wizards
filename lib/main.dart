@@ -43,7 +43,7 @@ class WfwApp extends StatelessWidget {
           onSurface: Color.fromARGB(255, 0, 0, 0),
         ),
       ),
-      home: const GameCountdownPage(),
+      home: const FrontPage(),
     );
   }
 }
