@@ -24,20 +24,21 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
     late StatelessWidget page;
     switch (_state) {
       case OpponentPageState.findOpponent:
-        page = FindOpponentPage();
+        page = FindOpponentPage(changeState: changeState);
         break;
       case OpponentPageState.outgoingChallenge:
-        page = const OutgoingChallengePage();
+        page = OutgoingChallengePage(changeState: changeState);
         break;
       case OpponentPageState.incomingChallenge:
-        page = const IncomingChallengePage();
+        page = IncomingChallengePage(changeState: changeState);
     }
     return page;
   }
 }
 
 class FindOpponentPage extends StatelessWidget {
-  FindOpponentPage({super.key});
+  FindOpponentPage({super.key, required this.changeState});
+  final Function changeState;
   final TextEditingController inputFieldController = TextEditingController();
 
   @override
@@ -54,7 +55,10 @@ class FindOpponentPage extends StatelessWidget {
                   const InputDecoration(labelText: ("Enter an opponents name")),
             ),
             ElevatedButton(
-                onPressed: () {}, child: const Text("Challenge Opponent")),
+                onPressed: () {
+                  changeState(OpponentPageState.outgoingChallenge);
+                },
+                child: const Text("Challenge Opponent")),
             const SizedBox(
               height: 300,
             )

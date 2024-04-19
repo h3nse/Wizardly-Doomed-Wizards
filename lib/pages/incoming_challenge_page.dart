@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class IncomingChallengePage extends StatelessWidget {
-  const IncomingChallengePage({super.key});
+  const IncomingChallengePage({super.key, required this.changeState});
+  final Function changeState;
 
   @override
   Widget build(BuildContext context) {
