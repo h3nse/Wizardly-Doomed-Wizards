@@ -29,7 +29,8 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         );
         break;
       case OpponentPageState.outgoingChallenge:
-        page = OutgoingChallengePage(changeState: changeState);
+        page = OutgoingChallengePage(
+            changeState: changeState, stateChannel: stateChannel);
         break;
       case OpponentPageState.incomingChallenge:
         page = IncomingChallengePage(
@@ -49,12 +50,24 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
               if (payload['recieverId'] == Player().id)
                 {handleIncomingChallenge(payload['challengerName'])}
             });
+    stateChannel.onBroadcast(
+        event: 'challenge_cancelled',
+        callback: (_) => incomingChallengeCancelled());
     super.initState();
   }
 
   void handleIncomingChallenge(String challengerName) {
+    if (_challengerName != '') {
+      // TODO: Update challenger that the challenge didn't go through
+      return;
+    }
     _challengerName = challengerName;
     changeState(OpponentPageState.incomingChallenge);
+  }
+
+  void incomingChallengeCancelled() {
+    _challengerName = '';
+    changeState(OpponentPageState.findOpponent);
   }
 
   void changeState(OpponentPageState state) {

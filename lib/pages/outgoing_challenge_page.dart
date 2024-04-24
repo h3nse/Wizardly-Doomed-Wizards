@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 
 class OutgoingChallengePage extends StatelessWidget {
-  const OutgoingChallengePage({super.key, required this.changeState});
+  const OutgoingChallengePage(
+      {super.key, required this.changeState, required this.stateChannel});
   final Function changeState;
+  final RealtimeChannel stateChannel;
 
   @override
   Widget build(BuildContext context) {
@@ -29,5 +32,7 @@ class OutgoingChallengePage extends StatelessWidget {
 
   void cancelChallenge() {
     changeState(OpponentPageState.findOpponent);
+    stateChannel
+        .sendBroadcastMessage(event: 'challenge_cancelled', payload: {});
   }
 }
