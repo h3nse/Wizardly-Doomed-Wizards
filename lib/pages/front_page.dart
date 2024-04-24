@@ -27,7 +27,9 @@ class FrontPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                _createPlayer();
+                if (Player().name == ''){
+                  _createPlayer();
+                } 
                 Navigator.push(
                     context,
                     MaterialPageRoute(

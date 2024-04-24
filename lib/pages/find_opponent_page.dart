@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
+import 'package:wizardly_fucked_wizards/other/player.dart';
 import 'package:wizardly_fucked_wizards/pages/incoming_challenge_page.dart';
 import 'package:wizardly_fucked_wizards/pages/outgoing_challenge_page.dart';
 
@@ -48,7 +49,7 @@ class FindOpponentPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text("Hello PlayerName!"),
+            Text("Hello ${Player().name}!"),
             TextFormField(
               controller: inputFieldController,
               decoration:
