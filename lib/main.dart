@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:wizardly_fucked_wizards/pages/find_opponent_page.dart';
 import 'package:wizardly_fucked_wizards/pages/front_page.dart';
-import 'package:wizardly_fucked_wizards/pages/game_countdown_page.dart';
-import 'package:wizardly_fucked_wizards/pages/game_page.dart';
-import 'package:wizardly_fucked_wizards/pages/incoming_challenge_page.dart';
-import 'package:wizardly_fucked_wizards/pages/outgoing_challenge_page.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
-  const supabaseUrl = 'https://jcwxzybnrickofvzkgge.supabase.co';
+  const supabaseUrl = 'https://jwfncphwlozjrwtiseph.supabase.co';
   final supabaseKey = dotenv.env['SUPABASE_KEY']!;
 
   await Supabase.initialize(
