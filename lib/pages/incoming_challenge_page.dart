@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class IncomingChallengePage extends StatelessWidget {
-  const IncomingChallengePage({super.key, required this.changeState});
+  const IncomingChallengePage(
+      {super.key, required this.changeState, required this.challengerName});
   final Function changeState;
+  final String challengerName;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +13,7 @@ class IncomingChallengePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text("Waiting for opponent to accept..."),
+            Text("You are being challenged by $challengerName"),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

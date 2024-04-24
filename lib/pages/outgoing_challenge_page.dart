@@ -15,7 +15,7 @@ class OutgoingChallengePage extends StatelessWidget {
             const Text("Waiting for opponent to accept..."),
             ElevatedButton(
                 onPressed: () {
-                  changeState(OpponentPageState.findOpponent);
+                  cancelChallenge();
                 },
                 child: const Text("Cancel")),
             const SizedBox(
@@ -25,5 +25,9 @@ class OutgoingChallengePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void cancelChallenge() {
+    changeState(OpponentPageState.findOpponent);
   }
 }

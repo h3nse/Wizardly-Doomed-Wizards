@@ -16,6 +16,8 @@ void main() async {
   runApp(const WfwApp());
 }
 
+final supabase = Supabase.instance.client;
+
 class WfwApp extends StatelessWidget {
   const WfwApp({super.key});
 

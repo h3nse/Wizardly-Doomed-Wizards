@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
 import 'package:wizardly_fucked_wizards/pages/incoming_challenge_page.dart';
@@ -13,33 +15,66 @@ class OpponentChallengePage extends StatefulWidget {
 
 class _OpponentChallengePageState extends State<OpponentChallengePage> {
   OpponentPageState _state = OpponentPageState.findOpponent;
+  late final RealtimeChannel stateChannel;
+  String _challengerName = '';
+
+  @override
+  Widget build(BuildContext context) {
+    late Widget page;
+    switch (_state) {
+      case OpponentPageState.findOpponent:
+        page = FindOpponentPage(
+          changeState: changeState,
+          stateChannel: stateChannel,
+        );
+        break;
+      case OpponentPageState.outgoingChallenge:
+        page = OutgoingChallengePage(changeState: changeState);
+        break;
+      case OpponentPageState.incomingChallenge:
+        page = IncomingChallengePage(
+          changeState: changeState,
+          challengerName: _challengerName,
+        );
+    }
+    return page;
+  }
+
+  @override
+  void initState() {
+    stateChannel = supabase.channel('state').subscribe();
+    stateChannel.onBroadcast(
+        event: 'incoming_challenge',
+        callback: (payload) => {
+              if (payload['recieverId'] == Player().id)
+                {handleIncomingChallenge(payload['challengerName'])}
+            });
+    super.initState();
+  }
+
+  void handleIncomingChallenge(String challengerName) {
+    _challengerName = challengerName;
+    changeState(OpponentPageState.incomingChallenge);
+  }
 
   void changeState(OpponentPageState state) {
     setState(() {
       _state = state;
     });
   }
-
-  @override
-  Widget build(BuildContext context) {
-    late StatelessWidget page;
-    switch (_state) {
-      case OpponentPageState.findOpponent:
-        page = FindOpponentPage(changeState: changeState);
-        break;
-      case OpponentPageState.outgoingChallenge:
-        page = OutgoingChallengePage(changeState: changeState);
-        break;
-      case OpponentPageState.incomingChallenge:
-        page = IncomingChallengePage(changeState: changeState);
-    }
-    return page;
-  }
 }
 
-class FindOpponentPage extends StatelessWidget {
-  FindOpponentPage({super.key, required this.changeState});
+class FindOpponentPage extends StatefulWidget {
+  const FindOpponentPage(
+      {super.key, required this.changeState, required this.stateChannel});
   final Function changeState;
+  final RealtimeChannel stateChannel;
+
+  @override
+  State<FindOpponentPage> createState() => _FindOpponentPageState();
+}
+
+class _FindOpponentPageState extends State<FindOpponentPage> {
   final TextEditingController inputFieldController = TextEditingController();
 
   @override
@@ -57,7 +92,7 @@ class FindOpponentPage extends StatelessWidget {
             ),
             ElevatedButton(
                 onPressed: () {
-                  changeState(OpponentPageState.outgoingChallenge);
+                  challengeOpponent(inputFieldController.text);
                 },
                 child: const Text("Challenge Opponent")),
             const SizedBox(
@@ -67,5 +102,26 @@ class FindOpponentPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void challengeOpponent(String name) async {
+    if (name == Player().name) {
+      return;
+    }
+
+    Map<String, dynamic> content;
+    try {
+      content =
+          await supabase.from('players').select('id').eq('name', name).single();
+    } catch (_) {
+      return;
+    }
+    widget.changeState(OpponentPageState.outgoingChallenge);
+
+    final int recieverId = content['id'];
+
+    widget.stateChannel.sendBroadcastMessage(
+        event: 'incoming_challenge',
+        payload: {'recieverId': recieverId, 'challengerName': Player().name});
   }
 }

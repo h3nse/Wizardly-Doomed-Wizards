@@ -1,12 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
 import 'package:wizardly_fucked_wizards/other/words_for_names.dart';
 import 'package:wizardly_fucked_wizards/pages/find_opponent_page.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-final supabase = Supabase.instance.client;
 
 class FrontPage extends StatelessWidget {
   const FrontPage({super.key});
@@ -27,9 +25,9 @@ class FrontPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                if (Player().name == ''){
+                if (Player().name == '') {
                   _createPlayer();
-                } 
+                }
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -51,12 +49,12 @@ class FrontPage extends StatelessWidget {
         name = _generateName();
         Random random = Random();
         id = random.nextInt(10000);
+        Player().name = name;
+        Player().id = id;
         await supabase.from('players').insert({'id': id, 'name': name});
         break;
       } catch (_) {}
     }
-    Player().name = name;
-    Player().id = id;
   }
 
   String _generateName() {
