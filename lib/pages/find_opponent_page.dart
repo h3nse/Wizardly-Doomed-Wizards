@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
+import 'package:wizardly_fucked_wizards/pages/game_countdown_page.dart';
 import 'package:wizardly_fucked_wizards/pages/incoming_challenge_page.dart';
 import 'package:wizardly_fucked_wizards/pages/outgoing_challenge_page.dart';
 
@@ -67,6 +68,14 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
             });
     stateChannel.onBroadcast(
         event: 'challenge_rejected', callback: (payload) => reset());
+    stateChannel.onBroadcast(
+        event: 'challenge_accepted',
+        callback: (payload) {
+          Player().opponentId = payload['recieverId'];
+          supabase.from('players').update({'opponent_id': Player().opponentId});
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const GameCountdownPage()));
+        });
     super.initState();
   }
 

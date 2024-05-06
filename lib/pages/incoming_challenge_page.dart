@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wizardly_fucked_wizards/main.dart';
+import 'package:wizardly_fucked_wizards/other/player.dart';
+import 'package:wizardly_fucked_wizards/pages/game_countdown_page.dart';
 
 class IncomingChallengePage extends StatelessWidget {
   const IncomingChallengePage(
@@ -31,7 +35,13 @@ class IncomingChallengePage extends StatelessWidget {
                       rejectChallenge();
                     },
                     child: const Text("Reject")),
-                ElevatedButton(onPressed: () {}, child: const Text("Accept"))
+                ElevatedButton(
+                    onPressed: () {
+                      acceptChallenge();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const GameCountdownPage()));
+                    },
+                    child: const Text("Accept"))
               ],
             ),
             const SizedBox(
@@ -44,8 +54,16 @@ class IncomingChallengePage extends StatelessWidget {
   }
 
   void rejectChallenge() {
-    reset();
     stateChannel.sendBroadcastMessage(
         event: 'challenge_rejected', payload: {'challengerId': challengerId});
+    reset();
+  }
+
+  void acceptChallenge() {
+    Player().opponentId = challengerId;
+    supabase.from('players').update({'opponent_id': Player().opponentId});
+    stateChannel.sendBroadcastMessage(
+        event: 'challenge_accepted',
+        payload: {'challengerId': challengerId, 'recieverId': Player().id});
   }
 }
