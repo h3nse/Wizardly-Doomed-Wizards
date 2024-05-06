@@ -17,6 +17,7 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
   OpponentPageState _state = OpponentPageState.findOpponent;
   late final RealtimeChannel stateChannel;
   String _challengerName = '';
+  int _challengerId = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,10 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
       case OpponentPageState.incomingChallenge:
         page = IncomingChallengePage(
           changeState: changeState,
+          challengerId: _challengerId,
           challengerName: _challengerName,
+          reset: reset,
+          stateChannel: stateChannel,
         );
     }
     return page;
@@ -54,14 +58,15 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
                 }
             });
     stateChannel.onBroadcast(
-        event: 'challenge_cancelled',
-        callback: (_) => incomingChallengeCancelled());
+        event: 'challenge_cancelled', callback: (_) => reset());
     stateChannel.onBroadcast(
         event: 'challenge_status',
         callback: (payload) => {
               if (payload['challengerId'] == Player().id)
                 {handleChallengeStatus(payload['challenge_status'])}
             });
+    stateChannel.onBroadcast(
+        event: 'challenge_rejected', callback: (payload) => reset());
     super.initState();
   }
 
@@ -77,12 +82,14 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         event: 'challenge_status',
         payload: {'challengerId': challengerId, 'challenge_status': 'ok'});
 
+    _challengerId = challengerId;
     _challengerName = challengerName;
     changeState(OpponentPageState.incomingChallenge);
   }
 
-  void incomingChallengeCancelled() {
+  void reset() {
     _challengerName = '';
+    _challengerId = 0;
     changeState(OpponentPageState.findOpponent);
   }
 
