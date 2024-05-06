@@ -43,24 +43,40 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
 
   @override
   void initState() {
-    stateChannel = supabase.channel('state').subscribe();
+    stateChannel = supabase.channel('lobby').subscribe();
     stateChannel.onBroadcast(
         event: 'incoming_challenge',
         callback: (payload) => {
               if (payload['recieverId'] == Player().id)
-                {handleIncomingChallenge(payload['challengerName'])}
+                {
+                  handleIncomingChallenge(
+                      payload['challengerId'], payload['challengerName'])
+                }
             });
     stateChannel.onBroadcast(
         event: 'challenge_cancelled',
         callback: (_) => incomingChallengeCancelled());
+    stateChannel.onBroadcast(
+        event: 'challenge_status',
+        callback: (payload) => {
+              if (payload['challengerId'] == Player().id)
+                {handleChallengeStatus(payload['challenge_status'])}
+            });
     super.initState();
   }
 
-  void handleIncomingChallenge(String challengerName) {
-    if (_challengerName != '') {
-      // TODO: Update challenger that the challenge didn't go through
+  void handleIncomingChallenge(int challengerId, String challengerName) {
+    if (_state != OpponentPageState.findOpponent) {
+      stateChannel.sendBroadcastMessage(event: 'challenge_status', payload: {
+        'challengerId': challengerId,
+        'challenge_status': 'denied'
+      });
       return;
     }
+    stateChannel.sendBroadcastMessage(
+        event: 'challenge_status',
+        payload: {'challengerId': challengerId, 'challenge_status': 'ok'});
+
     _challengerName = challengerName;
     changeState(OpponentPageState.incomingChallenge);
   }
@@ -68,6 +84,16 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
   void incomingChallengeCancelled() {
     _challengerName = '';
     changeState(OpponentPageState.findOpponent);
+  }
+
+  void handleChallengeStatus(String challengeStatus) {
+    switch (challengeStatus) {
+      case 'ok':
+        changeState(OpponentPageState.outgoingChallenge);
+        break;
+      case 'denied':
+        break;
+    }
   }
 
   void changeState(OpponentPageState state) {
@@ -129,12 +155,14 @@ class _FindOpponentPageState extends State<FindOpponentPage> {
     } catch (_) {
       return;
     }
-    widget.changeState(OpponentPageState.outgoingChallenge);
 
     final int recieverId = content['id'];
 
-    widget.stateChannel.sendBroadcastMessage(
-        event: 'incoming_challenge',
-        payload: {'recieverId': recieverId, 'challengerName': Player().name});
+    widget.stateChannel
+        .sendBroadcastMessage(event: 'incoming_challenge', payload: {
+      'recieverId': recieverId,
+      'challengerId': Player().id,
+      'challengerName': Player().name
+    });
   }
 }
