@@ -36,7 +36,7 @@ class _GameCountdownPageState extends State<GameCountdownPage> {
             )
           ]),
           onFinished: () {
-            Get.to(const GamePage());
+            Get.to(() => const GamePage());
           },
         ),
       ),

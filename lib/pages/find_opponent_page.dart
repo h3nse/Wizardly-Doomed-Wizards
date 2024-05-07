@@ -74,7 +74,7 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         callback: (payload) {
           Player().opponentId = payload['recieverId'];
           supabase.from('players').update({'opponent_id': Player().opponentId});
-          Get.to(const GameCountdownPage());
+          Get.to(() => const GameCountdownPage());
         });
     super.initState();
   }

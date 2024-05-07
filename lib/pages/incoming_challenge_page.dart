@@ -38,7 +38,7 @@ class IncomingChallengePage extends StatelessWidget {
                 ElevatedButton(
                     onPressed: () {
                       acceptChallenge();
-                      Get.to(const GameCountdownPage());
+                      Get.to(() => const GameCountdownPage());
                     },
                     child: const Text("Accept"))
               ],

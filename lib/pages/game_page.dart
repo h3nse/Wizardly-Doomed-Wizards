@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:wizardly_fucked_wizards/pages/scanner/QR_scanner.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({super.key});
@@ -19,7 +21,11 @@ class GamePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                    onPressed: () {}, child: const Text("Scan Ingredient")),
+                    onPressed: () async {
+                      String? result = await Get.to(const QRScanner());
+                      print(result);
+                    },
+                    child: const Text("Scan Ingredient")),
                 ElevatedButton(
                     onPressed: () {}, child: const Text("Pour Potion Out"))
               ],

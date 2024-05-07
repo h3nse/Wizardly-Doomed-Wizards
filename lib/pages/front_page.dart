@@ -28,7 +28,7 @@ class FrontPage extends StatelessWidget {
                 if (Player().name == '') {
                   _createPlayer();
                 }
-                Get.to(const OpponentChallengePage());
+                Get.to(() => const OpponentChallengePage());
               },
               child: const Text("PLAY"),
             )
