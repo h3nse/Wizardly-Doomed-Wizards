@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
+import 'package:wizardly_fucked_wizards/other/constants.dart';
+import 'package:wizardly_fucked_wizards/other/id_to_ingredient.dart';
 import 'package:wizardly_fucked_wizards/pages/scanner/QR_scanner.dart';
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   const GamePage({super.key});
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  IngredientController ingredientController = Get.put(IngredientController());
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +32,10 @@ class GamePage extends StatelessWidget {
               children: [
                 ElevatedButton(
                     onPressed: () async {
-                      String? result = await Get.to(const QRScanner());
-                      print(result);
+                      String result = await Get.to(const QRScanner());
+                      if (result == '') return;
+                      final ingredientId = int.tryParse(result);
+                      ingredientController.ingredients.add(ingredientId);
                     },
                     child: const Text("Scan Ingredient")),
                 ElevatedButton(
@@ -63,8 +75,48 @@ class Player extends StatelessWidget {
   }
 }
 
-class Potion extends StatelessWidget {
+class Potion extends StatefulWidget {
   const Potion({super.key});
+
+  @override
+  State<Potion> createState() => _PotionState();
+}
+
+class _PotionState extends State<Potion> {
+  PotionState _potionState = PotionState.empty;
+
+  @override
+  Widget build(BuildContext context) {
+    late Widget potionView;
+    switch (_potionState) {
+      case PotionState.empty:
+        potionView = const EmptyPotion();
+        break;
+      case PotionState.mixing:
+        potionView = const MixingPotion();
+        break;
+      case PotionState.finished:
+        potionView = const FinishedPotion();
+    }
+    return potionView;
+  }
+
+  void changePotionState(PotionState potionState) {
+    setState(() {
+      _potionState = potionState;
+    });
+  }
+}
+
+class EmptyPotion extends StatefulWidget {
+  const EmptyPotion({super.key});
+
+  @override
+  State<EmptyPotion> createState() => _EmptyPotionState();
+}
+
+class _EmptyPotionState extends State<EmptyPotion> {
+  IngredientController ingredientController = Get.put(IngredientController());
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +130,40 @@ class Potion extends StatelessWidget {
             border: Border.all(
                 width: 2, color: Theme.of(context).colorScheme.primary),
           ),
-          child: const Center(
-            child: Text("Potion"),
+          child: Center(
+            child: Column(
+              children: [
+                const Text('Empty Potion'),
+                Obx(() => ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ingredientController.ingredients.length,
+                    itemBuilder: (context, index) => ListTile(
+                          title: Text(idToIngredient[
+                              ingredientController.ingredients[index]]!),
+                        )))
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+class MixingPotion extends StatelessWidget {
+  const MixingPotion({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class FinishedPotion extends StatelessWidget {
+  const FinishedPotion({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

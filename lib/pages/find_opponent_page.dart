@@ -147,6 +147,9 @@ class _FindOpponentPageState extends State<FindOpponentPage> {
             ),
             ElevatedButton(
                 onPressed: () {
+                  if (inputFieldController.text == 'Debug') {
+                    Get.to(() => const GameCountdownPage());
+                  }
                   challengeOpponent(inputFieldController.text);
                 },
                 child: const Text("Challenge Opponent")),

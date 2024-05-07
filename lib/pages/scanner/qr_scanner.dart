@@ -35,8 +35,8 @@ class _QRScannerState extends State<QRScanner>
 
   @override
   void initState() {
-    super.initState();
     timer = Timer.periodic(const Duration(milliseconds: 750), _onTimerTimeout);
+    super.initState();
   }
 
   @override
