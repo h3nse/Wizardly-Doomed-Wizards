@@ -13,35 +13,18 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  IngredientController ingredientController = Get.put(IngredientController());
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [Player(text: "You"), Player(text: "Opponent")],
             ),
-            const Potion(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                    onPressed: () async {
-                      String result = await Get.to(const QRScanner());
-                      if (result == '') return;
-                      final ingredientId = int.tryParse(result);
-                      ingredientController.ingredients.add(ingredientId);
-                    },
-                    child: const Text("Scan Ingredient")),
-                ElevatedButton(
-                    onPressed: () {}, child: const Text("Pour Potion Out"))
-              ],
-            )
+            Potion(),
           ],
         ),
       ),
@@ -83,6 +66,7 @@ class Potion extends StatefulWidget {
 }
 
 class _PotionState extends State<Potion> {
+  IngredientController ingredientController = Get.put(IngredientController());
   PotionState _potionState = PotionState.empty;
 
   @override
@@ -90,7 +74,9 @@ class _PotionState extends State<Potion> {
     late Widget potionView;
     switch (_potionState) {
       case PotionState.empty:
-        potionView = const EmptyPotion();
+        potionView = EmptyPotion(
+          changePotionState: changePotionState,
+        );
         break;
       case PotionState.mixing:
         potionView = const MixingPotion();
@@ -98,7 +84,29 @@ class _PotionState extends State<Potion> {
       case PotionState.finished:
         potionView = const FinishedPotion();
     }
-    return potionView;
+    return Column(
+      children: [
+        potionView,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+                onPressed: () async {
+                  if (_potionState != PotionState.empty) {
+                    return;
+                  }
+                  String result = await Get.to(const QRScanner());
+                  if (result == '') return;
+                  final ingredientId = int.tryParse(result);
+                  ingredientController.ingredients.add(ingredientId);
+                },
+                child: const Text("Scan Ingredient")),
+            ElevatedButton(
+                onPressed: () {}, child: const Text("Pour Potion Out"))
+          ],
+        )
+      ],
+    );
   }
 
   void changePotionState(PotionState potionState) {
@@ -109,7 +117,8 @@ class _PotionState extends State<Potion> {
 }
 
 class EmptyPotion extends StatefulWidget {
-  const EmptyPotion({super.key});
+  const EmptyPotion({super.key, required this.changePotionState});
+  final Function changePotionState;
 
   @override
   State<EmptyPotion> createState() => _EmptyPotionState();
@@ -121,7 +130,9 @@ class _EmptyPotionState extends State<EmptyPotion> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        widget.changePotionState(PotionState.mixing);
+      },
       child: SizedBox(
         height: 200,
         width: 200,
@@ -135,12 +146,11 @@ class _EmptyPotionState extends State<EmptyPotion> {
               children: [
                 const Text('Empty Potion'),
                 Obx(() => ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: ingredientController.ingredients.length,
-                    itemBuilder: (context, index) => ListTile(
-                          title: Text(idToIngredient[
-                              ingredientController.ingredients[index]]!),
-                        )))
+                      shrinkWrap: true,
+                      itemCount: ingredientController.ingredients.length,
+                      itemBuilder: (context, index) => Text(idToIngredient[
+                          ingredientController.ingredients[index]]!),
+                    ))
               ],
             ),
           ),
