@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
@@ -38,8 +38,7 @@ class IncomingChallengePage extends StatelessWidget {
                 ElevatedButton(
                     onPressed: () {
                       acceptChallenge();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const GameCountdownPage()));
+                      Get.to(const GameCountdownPage());
                     },
                     child: const Text("Accept"))
               ],

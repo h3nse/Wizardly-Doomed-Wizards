@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:intl/intl.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page.dart';
@@ -35,8 +36,7 @@ class _GameCountdownPageState extends State<GameCountdownPage> {
             )
           ]),
           onFinished: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const GamePage()));
+            Get.to(const GamePage());
           },
         ),
       ),

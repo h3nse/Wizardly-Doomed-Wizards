@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
@@ -73,8 +74,7 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         callback: (payload) {
           Player().opponentId = payload['recieverId'];
           supabase.from('players').update({'opponent_id': Player().opponentId});
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const GameCountdownPage()));
+          Get.to(const GameCountdownPage());
         });
     super.initState();
   }

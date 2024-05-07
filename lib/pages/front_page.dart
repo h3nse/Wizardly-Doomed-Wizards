@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
@@ -28,10 +28,7 @@ class FrontPage extends StatelessWidget {
                 if (Player().name == '') {
                   _createPlayer();
                 }
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const OpponentChallengePage()));
+                Get.to(const OpponentChallengePage());
               },
               child: const Text("PLAY"),
             )
