@@ -102,9 +102,23 @@ class _PotionState extends State<Potion> {
                 },
                 child: const Text("Scan Ingredient")),
             ElevatedButton(
-                onPressed: () {}, child: const Text("Pour Potion Out"))
+                onPressed: () {
+                  switch (_potionState) {
+                    case PotionState.empty:
+                      ingredientController.ingredients = [].obs;
+                      break;
+                    case PotionState.mixing:
+                      ingredientController.ingredients = [].obs;
+                      changePotionState(PotionState.empty);
+                      break;
+                    case PotionState.finished:
+                      // TODO: Implement function
+                      break;
+                  }
+                },
+                child: const Text("Pour Potion Out"))
           ],
-        )
+        ),
       ],
     );
   }
@@ -145,12 +159,14 @@ class _EmptyPotionState extends State<EmptyPotion> {
             child: Column(
               children: [
                 const Text('Empty Potion'),
-                Obx(() => ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: ingredientController.ingredients.length,
-                      itemBuilder: (context, index) => Text(idToIngredient[
-                          ingredientController.ingredients[index]]!),
-                    ))
+                Obx(
+                  () => ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ingredientController.ingredients.length,
+                    itemBuilder: (context, index) => Text(idToIngredient[
+                        ingredientController.ingredients[index]]!),
+                  ),
+                )
               ],
             ),
           ),
