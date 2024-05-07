@@ -176,12 +176,21 @@ class _EmptyPotionState extends State<EmptyPotion> {
   }
 }
 
-class MixingPotion extends StatelessWidget {
+class MixingPotion extends StatefulWidget {
   const MixingPotion({super.key});
 
   @override
+  State<MixingPotion> createState() => _MixingPotionState();
+}
+
+class _MixingPotionState extends State<MixingPotion> {
+  int mixLevel = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Center(
+        child:
+            Image.asset('assets/PotionMixState${(mixLevel / 2).floor()}.png'));
   }
 }
 
