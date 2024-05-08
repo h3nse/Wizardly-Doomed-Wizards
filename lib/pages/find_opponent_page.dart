@@ -74,7 +74,12 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         callback: (payload) {
           Player().opponentId = payload['recieverId'];
           supabase.from('players').update({'opponent_id': Player().opponentId});
-          Get.to(() => const GameCountdownPage());
+          // channelName is a combination of the two players' ids
+          final String channelName =
+              Player().id.toString() + Player().opponentId.toString();
+          Get.to(() => GameCountdownPage(
+                channelName: channelName,
+              ));
         });
     super.initState();
   }
@@ -147,9 +152,6 @@ class _FindOpponentPageState extends State<FindOpponentPage> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  if (inputFieldController.text == 'Debug') {
-                    Get.to(() => const GameCountdownPage());
-                  }
                   challengeOpponent(inputFieldController.text);
                 },
                 child: const Text("Challenge Opponent")),

@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/list_notifier.dart';
 import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
@@ -11,67 +10,14 @@ import 'package:wizardly_fucked_wizards/pages/scanner/QR_scanner.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:collection/collection.dart';
 
-class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+class PotionView extends StatefulWidget {
+  const PotionView({super.key});
 
   @override
-  State<GamePage> createState() => _GamePageState();
+  State<PotionView> createState() => _PotionViewState();
 }
 
-class _GamePageState extends State<GamePage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [Player(text: "You"), Player(text: "Opponent")],
-            ),
-            Potion(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class Player extends StatelessWidget {
-  const Player({super.key, required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: SizedBox(
-        height: 100,
-        width: 100,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-                width: 2, color: Theme.of(context).colorScheme.primary),
-          ),
-          child: Center(
-            child: Text(text),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Potion extends StatefulWidget {
-  const Potion({super.key});
-
-  @override
-  State<Potion> createState() => _PotionState();
-}
-
-class _PotionState extends State<Potion> {
+class _PotionViewState extends State<PotionView> {
   IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
   PotionState _potionState = PotionState.empty;
@@ -254,6 +200,7 @@ class FinishedPotion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(PotionFactory.getPotionById(potionId).name);
+    return SizedBox(
+        height: 200, child: Text(PotionFactory.getPotionById(potionId).name));
   }
 }

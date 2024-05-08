@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 import 'package:intl/intl.dart';
-import 'package:wizardly_fucked_wizards/pages/game_page.dart';
+import 'package:wizardly_fucked_wizards/pages/game_page/game_page.dart';
 
 class GameCountdownPage extends StatefulWidget {
-  const GameCountdownPage({super.key});
+  const GameCountdownPage({super.key, required this.channelName});
+  final String channelName;
 
   @override
   State<GameCountdownPage> createState() => _GameCountdownPageState();
@@ -36,7 +37,9 @@ class _GameCountdownPageState extends State<GameCountdownPage> {
             )
           ]),
           onFinished: () {
-            Get.to(() => const GamePage());
+            Get.to(() => GamePage(
+                  channelName: widget.channelName,
+                ));
           },
         ),
       ),

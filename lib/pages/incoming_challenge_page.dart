@@ -38,7 +38,12 @@ class IncomingChallengePage extends StatelessWidget {
                 ElevatedButton(
                     onPressed: () {
                       acceptChallenge();
-                      Get.to(() => const GameCountdownPage());
+                      // channelName is a combination of the two players' ids
+                      final String channelName =
+                          challengerId.toString() + Player().id.toString();
+                      Get.to(() => GameCountdownPage(
+                            channelName: channelName,
+                          ));
                     },
                     child: const Text("Accept"))
               ],
