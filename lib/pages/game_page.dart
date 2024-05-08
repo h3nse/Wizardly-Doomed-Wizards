@@ -5,6 +5,7 @@ import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/convertions.dart';
+import 'package:wizardly_fucked_wizards/other/potions.dart';
 import 'package:wizardly_fucked_wizards/pages/scanner/QR_scanner.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:collection/collection.dart';
@@ -236,7 +237,7 @@ class _MixingPotionState extends State<MixingPotion> {
         break;
       }
     }
-    potionController.potionId = potionId.obs;
+    potionController.potionId.value = potionId;
     widget.changePotionState(PotionState.finished);
   }
 }
@@ -247,6 +248,6 @@ class FinishedPotion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(potionId.toString());
+    return Text(PotionFactory.getPotionById(potionId).name);
   }
 }

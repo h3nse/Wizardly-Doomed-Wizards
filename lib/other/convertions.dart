@@ -1,3 +1,5 @@
+import 'package:wizardly_fucked_wizards/other/potions.dart';
+
 final idToIngredient = {
   1: 'Petrified Rose Petal',
   2: 'Boom Berries',
@@ -45,15 +47,3 @@ const List ingredientsToPotion = [
     [2, 5]
   ]
 ];
-
-// const Map idToPotionClass = {
-//   0: DefaultPotion(),
-//   1: PotionOfHealing(),
-//   2: ExplodingPotion(),
-//   3: PotionOfStoneskin(),
-//   9: PotionOfExplodingHealth(),
-//   10: PotionOfRegeneration(),
-//   11: PotionOfDelayedExplosion(),
-//   12: PotionOfFlames(),
-//   13: PotionOfIncendiary(),
-// };
