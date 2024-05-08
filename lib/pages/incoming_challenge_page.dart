@@ -66,8 +66,10 @@ class IncomingChallengePage extends StatelessWidget {
   void acceptChallenge() {
     Player().opponentId = challengerId;
     supabase.from('players').update({'opponent_id': Player().opponentId});
-    stateChannel.sendBroadcastMessage(
-        event: 'challenge_accepted',
-        payload: {'challengerId': challengerId, 'recieverId': Player().id});
+    stateChannel.sendBroadcastMessage(event: 'challenge_accepted', payload: {
+      'challengerId': challengerId,
+      'recieverId': Player().id,
+      'recieverName': Player().name
+    });
   }
 }

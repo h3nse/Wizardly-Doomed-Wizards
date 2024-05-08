@@ -5,8 +5,10 @@ import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
+import 'package:wizardly_fucked_wizards/other/player.dart';
 import 'package:wizardly_fucked_wizards/other/potions.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page/potion_views.dart';
+import 'package:wizardly_fucked_wizards/pages/post_game_page.dart';
 
 // TODO: Show players who is drinking/throwing what.
 // TODO: Implement conditions
@@ -35,12 +37,12 @@ class _GamePageState extends State<GamePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Player(
+                PlayerView(
                   name: "You",
                   onTap: youOnTap,
                   playerController: youController,
                 ),
-                Player(
+                PlayerView(
                   name: "Opponent",
                   onTap: opponentOnTap,
                   playerController: opponentController,
@@ -58,7 +60,7 @@ class _GamePageState extends State<GamePage> {
   void initState() {
     _broadcastChannel = supabase.channel(widget.channelName).subscribe();
     youController.setBroadcastChannel(_broadcastChannel);
-    opponentController.setBroadcastChannel(_broadcastChannel);
+    youController.setOnDeath(youOnDeath);
 
     _broadcastChannel.onBroadcast(
         event: 'opponent_update',
@@ -68,6 +70,9 @@ class _GamePageState extends State<GamePage> {
         event: 'potion_action',
         callback: (payload) =>
             handlePotionAction(payload['potionId'], payload['isThrown']));
+
+    _broadcastChannel.onBroadcast(
+        event: 'opponent_death', callback: (_) => opponentOnDeath());
     super.initState();
   }
 
@@ -84,6 +89,18 @@ class _GamePageState extends State<GamePage> {
       'isThrown': true
     });
     // Animation
+    potionController.potionId.value = 0;
+    potionController.potionState.value = PotionState.empty;
+  }
+
+  void youOnDeath() {
+    _broadcastChannel
+        .sendBroadcastMessage(event: 'opponent_death', payload: {});
+    Get.to(PostGamePage(winnerName: Player().opponentName));
+  }
+
+  void opponentOnDeath() {
+    Get.to(PostGamePage(winnerName: Player().name));
   }
 
   void updateOpponent(Map<String, dynamic> updates) {
@@ -101,8 +118,8 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class Player extends StatefulWidget {
-  const Player(
+class PlayerView extends StatefulWidget {
+  const PlayerView(
       {super.key,
       required this.name,
       required this.onTap,
@@ -113,10 +130,10 @@ class Player extends StatefulWidget {
   final PlayerController playerController;
 
   @override
-  State<Player> createState() => _PlayerState();
+  State<PlayerView> createState() => _PlayerViewState();
 }
 
-class _PlayerState extends State<Player> {
+class _PlayerViewState extends State<PlayerView> {
   @override
   Widget build(BuildContext context) {
     return Column(
