@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
+import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
-import 'package:wizardly_fucked_wizards/other/id_to_ingredient.dart';
+import 'package:wizardly_fucked_wizards/other/convertions.dart';
 import 'package:wizardly_fucked_wizards/pages/scanner/QR_scanner.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:collection/collection.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -67,6 +71,7 @@ class Potion extends StatefulWidget {
 
 class _PotionState extends State<Potion> {
   IngredientController ingredientController = Get.put(IngredientController());
+  PotionController potionController = Get.put(PotionController());
   PotionState _potionState = PotionState.empty;
 
   @override
@@ -79,10 +84,12 @@ class _PotionState extends State<Potion> {
         );
         break;
       case PotionState.mixing:
-        potionView = const MixingPotion();
+        potionView = MixingPotion(
+          changePotionState: changePotionState,
+        );
         break;
       case PotionState.finished:
-        potionView = const FinishedPotion();
+        potionView = FinishedPotion(potionId: potionController.potionId.value);
     }
     return Column(
       children: [
@@ -95,8 +102,8 @@ class _PotionState extends State<Potion> {
                   if (_potionState != PotionState.empty) {
                     return;
                   }
-                  String result = await Get.to(const QRScanner());
-                  if (result == '') return;
+                  String? result = await Get.to(const QRScanner());
+                  if (result == '' || result == null) return;
                   final ingredientId = int.tryParse(result);
                   ingredientController.ingredients.add(ingredientId);
                 },
@@ -105,15 +112,16 @@ class _PotionState extends State<Potion> {
                 onPressed: () {
                   switch (_potionState) {
                     case PotionState.empty:
-                      ingredientController.ingredients = [].obs;
+                      ingredientController.ingredients.clear();
                       break;
                     case PotionState.mixing:
-                      ingredientController.ingredients = [].obs;
+                      ingredientController.ingredients.clear();
                       changePotionState(PotionState.empty);
                       break;
                     case PotionState.finished:
-                      // TODO: Implement function
-                      break;
+                      ingredientController.ingredients.clear();
+                      potionController.potionId.value = 0;
+                      changePotionState(PotionState.empty);
                   }
                 },
                 child: const Text("Pour Potion Out"))
@@ -177,14 +185,18 @@ class _EmptyPotionState extends State<EmptyPotion> {
 }
 
 class MixingPotion extends StatefulWidget {
-  const MixingPotion({super.key});
+  const MixingPotion({super.key, required this.changePotionState});
+  final Function changePotionState;
 
   @override
   State<MixingPotion> createState() => _MixingPotionState();
 }
 
 class _MixingPotionState extends State<MixingPotion> {
-  int mixLevel = 0;
+  IngredientController ingredientController = Get.put(IngredientController());
+  PotionController potionController = Get.put(PotionController());
+  late StreamSubscription accelerometerSubscription;
+  double mixLevel = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -192,13 +204,49 @@ class _MixingPotionState extends State<MixingPotion> {
         child:
             Image.asset('assets/PotionMixState${(mixLevel / 2).floor()}.png'));
   }
+
+  @override
+  void initState() {
+    accelerometerSubscription = userAccelerometerEventStream(
+            samplingPeriod: const Duration(milliseconds: potionShakeIntervalMs))
+        .listen((event) {
+      if (event.x.abs() > potionShakeThreshold ||
+          event.y.abs() > potionShakeThreshold ||
+          event.z.abs() > potionShakeThreshold) {
+        setState(() {
+          mixLevel = mixLevel + mixLevelIncrease;
+        });
+        if (mixLevel >= maxMixLevel) {
+          createPotion();
+          widget.changePotionState(PotionState.finished);
+        }
+      }
+    });
+    super.initState();
+  }
+
+  createPotion() {
+    List ingredients = ingredientController.ingredients;
+    ingredients.sort();
+    Function eq = const ListEquality().equals;
+    int potionId = 0;
+    for (var i = 0; i < ingredientsToPotion.length; i++) {
+      if (eq(ingredientsToPotion[i][1], ingredients)) {
+        potionId = ingredientsToPotion[i][0];
+        break;
+      }
+    }
+    potionController.potionId = potionId.obs;
+    widget.changePotionState(PotionState.finished);
+  }
 }
 
 class FinishedPotion extends StatelessWidget {
-  const FinishedPotion({super.key});
+  const FinishedPotion({super.key, required this.potionId});
+  final int potionId;
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Text(potionId.toString());
   }
 }
