@@ -8,6 +8,9 @@ import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/potions.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page/potion_views.dart';
 
+// TODO: Show players who is drinking/throwing what.
+// TODO: Implement conditions
+
 class GamePage extends StatefulWidget {
   const GamePage({super.key, required this.channelName});
   final String channelName;
@@ -72,15 +75,30 @@ class _GamePageState extends State<GamePage> {
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
     potionController.potionState.value = PotionState.empty;
+    // Animation
   }
 
-  void opponentOnTap() {}
+  void opponentOnTap() {
+    _broadcastChannel.sendBroadcastMessage(event: 'potion_action', payload: {
+      'potionId': potionController.potionId.value,
+      'isThrown': true
+    });
+    // Animation
+  }
 
   void updateOpponent(Map<String, dynamic> updates) {
     opponentController.health.value = updates['health'];
   }
 
-  void handlePotionAction(int potionId, bool isThrown) {}
+  void handlePotionAction(int potionId, bool isThrown) {
+    if (!isThrown) {
+      // Animation
+      return;
+    }
+
+    PotionFactory.getPotionById(potionId).applyPotion();
+    // Animation
+  }
 }
 
 class Player extends StatefulWidget {
