@@ -87,7 +87,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void updateOpponent(Map<String, dynamic> updates) {
-    opponentController.health.value = updates['health'];
+    opponentController.health = updates['health'];
   }
 
   void handlePotionAction(int potionId, bool isThrown) {
@@ -139,7 +139,7 @@ class _PlayerState extends State<Player> {
             ),
           ),
         ),
-        Obx(() => Text(widget.playerController.health.value.toString()))
+        Obx(() => Text(widget.playerController.health.toString()))
       ],
     );
   }

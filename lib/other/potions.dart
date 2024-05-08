@@ -48,7 +48,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    youController.health.value -= 1;
+    youController.health -= 1;
     youController.sendUpdates();
   }
 }
