@@ -1,3 +1,6 @@
+import 'package:get/get.dart';
+import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
+
 class PotionFactory {
   static Potion getPotionById(int id) {
     switch (id) {
@@ -17,6 +20,7 @@ class PotionFactory {
 
 abstract class Potion {
   final String name;
+  final YouController youController = Get.put(YouController());
 
   Potion(this.name);
 
@@ -44,7 +48,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    // gameManager.takeDamage(Constants.potionEffectValues[id]!['Damage']);
+    youController.health.value -= 1;
   }
 }
 
