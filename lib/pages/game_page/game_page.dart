@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
+import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/potions.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page/potion_views.dart';
 
@@ -60,8 +61,9 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
-    print("you on tap");
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
+    potionController.potionId.value = 0;
+    potionController.potionState.value = PotionState.empty;
   }
 
   void opponentOnTap() {}

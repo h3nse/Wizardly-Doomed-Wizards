@@ -20,34 +20,36 @@ class PotionView extends StatefulWidget {
 class _PotionViewState extends State<PotionView> {
   IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
-  PotionState _potionState = PotionState.empty;
 
   @override
   Widget build(BuildContext context) {
-    late Widget potionView;
-    switch (_potionState) {
-      case PotionState.empty:
-        potionView = EmptyPotion(
-          changePotionState: changePotionState,
-        );
-        break;
-      case PotionState.mixing:
-        potionView = MixingPotion(
-          changePotionState: changePotionState,
-        );
-        break;
-      case PotionState.finished:
-        potionView = FinishedPotion(potionId: potionController.potionId.value);
-    }
     return Column(
       children: [
-        potionView,
+        Obx(() {
+          late Widget potionView;
+          switch (potionController.potionState.value) {
+            case PotionState.empty:
+              potionView = EmptyPotion(
+                changePotionState: changePotionState,
+              );
+              break;
+            case PotionState.mixing:
+              potionView = MixingPotion(
+                changePotionState: changePotionState,
+              );
+              break;
+            case PotionState.finished:
+              potionView = Obx(() =>
+                  FinishedPotion(potionId: potionController.potionId.value));
+          }
+          return potionView;
+        }),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
                 onPressed: () async {
-                  if (_potionState != PotionState.empty) {
+                  if (potionController.potionState.value != PotionState.empty) {
                     return;
                   }
                   String? result = await Get.to(const QRScanner());
@@ -58,7 +60,7 @@ class _PotionViewState extends State<PotionView> {
                 child: const Text("Scan Ingredient")),
             ElevatedButton(
                 onPressed: () {
-                  switch (_potionState) {
+                  switch (potionController.potionState.value) {
                     case PotionState.empty:
                       ingredientController.ingredients.clear();
                       break;
@@ -81,7 +83,7 @@ class _PotionViewState extends State<PotionView> {
 
   void changePotionState(PotionState potionState) {
     setState(() {
-      _potionState = potionState;
+      potionController.potionState.value = potionState;
     });
   }
 }
@@ -191,6 +193,7 @@ class _MixingPotionState extends State<MixingPotion> {
       }
     }
     potionController.potionId.value = potionId;
+    ingredientController.ingredients.clear();
   }
 }
 
