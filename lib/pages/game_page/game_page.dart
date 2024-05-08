@@ -17,7 +17,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  late final RealtimeChannel _duelChannel;
+  late final RealtimeChannel _broadcastChannel;
   PotionController potionController = Get.put(PotionController());
   YouController youController = Get.put(YouController());
   OpponentController opponentController = Get.put(OpponentController());
@@ -53,10 +53,18 @@ class _GamePageState extends State<GamePage> {
 
   @override
   void initState() {
-    _duelChannel = supabase.channel(widget.channelName).subscribe();
-    _duelChannel.onBroadcast(
+    _broadcastChannel = supabase.channel(widget.channelName).subscribe();
+    youController.setBroadcastChannel(_broadcastChannel);
+    opponentController.setBroadcastChannel(_broadcastChannel);
+
+    _broadcastChannel.onBroadcast(
         event: 'opponent_update',
         callback: (payload) => updateOpponent(payload));
+
+    _broadcastChannel.onBroadcast(
+        event: 'potion_action',
+        callback: (payload) =>
+            handlePotionAction(payload['potionId'], payload['isThrown']));
     super.initState();
   }
 
@@ -68,7 +76,11 @@ class _GamePageState extends State<GamePage> {
 
   void opponentOnTap() {}
 
-  void updateOpponent(Map<String, dynamic> updates) {}
+  void updateOpponent(Map<String, dynamic> updates) {
+    opponentController.health.value = updates['health'];
+  }
+
+  void handlePotionAction(int potionId, bool isThrown) {}
 }
 
 class Player extends StatefulWidget {
