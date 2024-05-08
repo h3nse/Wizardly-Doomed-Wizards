@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/list_notifier.dart';
 import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
@@ -226,6 +227,12 @@ class _MixingPotionState extends State<MixingPotion> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    accelerometerSubscription.cancel();
+    super.dispose();
+  }
+
   createPotion() {
     List ingredients = ingredientController.ingredients;
     ingredients.sort();
@@ -238,7 +245,6 @@ class _MixingPotionState extends State<MixingPotion> {
       }
     }
     potionController.potionId.value = potionId;
-    widget.changePotionState(PotionState.finished);
   }
 }
 

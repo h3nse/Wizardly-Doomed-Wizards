@@ -1,5 +1,3 @@
-import 'package:wizardly_fucked_wizards/other/potions.dart';
-
 final idToIngredient = {
   1: 'Petrified Rose Petal',
   2: 'Boom Berries',
