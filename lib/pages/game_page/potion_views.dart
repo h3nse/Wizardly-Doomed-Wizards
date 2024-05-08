@@ -146,13 +146,13 @@ class _MixingPotionState extends State<MixingPotion> {
   IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
   late StreamSubscription accelerometerSubscription;
-  double mixLevel = 0;
+  RxInt mixLevel = 0.obs;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-        child:
-            Image.asset('assets/PotionMixState${(mixLevel / 2).floor()}.png'));
+        child: Obx(() => Image.asset(
+            'assets/PotionMixState${(mixLevel.value / 2).floor()}.png')));
   }
 
   @override
@@ -164,9 +164,9 @@ class _MixingPotionState extends State<MixingPotion> {
           event.y.abs() > potionShakeThreshold ||
           event.z.abs() > potionShakeThreshold) {
         setState(() {
-          mixLevel = mixLevel + mixLevelIncrease;
+          mixLevel.value = mixLevel.value + mixLevelIncrease;
         });
-        if (mixLevel >= maxMixLevel) {
+        if (mixLevel.value >= maxMixLevel) {
           createPotion();
           widget.changePotionState(PotionState.finished);
         }
