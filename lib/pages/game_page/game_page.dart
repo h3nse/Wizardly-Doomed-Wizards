@@ -83,7 +83,6 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
-    youController.temperature -= 15;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
     potionController.potionState.value = PotionState.empty;
@@ -167,19 +166,34 @@ class _PlayerViewState extends State<PlayerView> {
           child: SizedBox(
             height: 100,
             width: 100,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                    width: 2, color: Theme.of(context).colorScheme.primary),
-              ),
-              child: Center(
-                child: Text(widget.name),
+            child: Obx(
+              () => Container(
+                decoration: BoxDecoration(
+                  color: getTemperatureColor(),
+                  border: Border.all(
+                      width: 2, color: Theme.of(context).colorScheme.primary),
+                ),
+                child: Center(
+                  child: Text(widget.name),
+                ),
               ),
             ),
           ),
         ),
-        Obx(() => Text(widget.playerController.isFrozen.toString()))
+        Obx(() => Text(widget.playerController.health.toString()))
       ],
     );
+  }
+
+  Color getTemperatureColor() {
+    double normalizedValue =
+        widget.playerController.temperature / temperatureLimitMax;
+    print(normalizedValue);
+
+    if (normalizedValue <= 0) {
+      return Color.lerp(null, Colors.blue, normalizedValue.abs())!;
+    } else {
+      return Color.lerp(null, Colors.red, normalizedValue)!;
+    }
   }
 }
