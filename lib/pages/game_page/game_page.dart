@@ -12,6 +12,8 @@ import 'package:wizardly_fucked_wizards/other/potions.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page/potion_views.dart';
 import 'package:wizardly_fucked_wizards/pages/post_game_page.dart';
 
+import 'player_view.dart';
+
 // TODO: Show players who is drinking/throwing what.
 // TODO: Implement conditions
 
@@ -36,20 +38,24 @@ class _GamePageState extends State<GamePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                PlayerView(
-                  name: "You",
-                  onTap: youOnTap,
-                  playerController: youController,
-                ),
-                PlayerView(
-                  name: "Opponent",
-                  onTap: opponentOnTap,
-                  playerController: opponentController,
-                )
-              ],
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  PlayerView(
+                    name: "You",
+                    onTap: youOnTap,
+                    playerController: youController,
+                    disableOnTap: youController.isFrozen,
+                  ),
+                  PlayerView(
+                    name: "Opponent",
+                    onTap: opponentOnTap,
+                    playerController: opponentController,
+                    disableOnTap: youController.isFrozen,
+                  )
+                ],
+              ),
             ),
             const PotionView(),
           ],
@@ -83,6 +89,8 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
+    youController.temperature = -20;
+    if (potionController.potionState.value != PotionState.finished) return;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
     potionController.potionState.value = PotionState.empty;
@@ -136,64 +144,5 @@ class _GamePageState extends State<GamePage> {
 
     // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
     if (youController.temperature > 15) youController.temperature = 20;
-  }
-}
-
-class PlayerView extends StatefulWidget {
-  const PlayerView(
-      {super.key,
-      required this.name,
-      required this.onTap,
-      required this.playerController});
-
-  final String name;
-  final Function onTap;
-  final PlayerController playerController;
-
-  @override
-  State<PlayerView> createState() => _PlayerViewState();
-}
-
-class _PlayerViewState extends State<PlayerView> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            widget.onTap();
-          },
-          child: SizedBox(
-            height: 100,
-            width: 100,
-            child: Obx(
-              () => Container(
-                decoration: BoxDecoration(
-                  color: getTemperatureColor(),
-                  border: Border.all(
-                      width: 2, color: Theme.of(context).colorScheme.primary),
-                ),
-                child: Center(
-                  child: Text(widget.name),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Obx(() => Text(widget.playerController.health.toString()))
-      ],
-    );
-  }
-
-  Color getTemperatureColor() {
-    double normalizedValue =
-        widget.playerController.temperature / temperatureLimitMax;
-    print(normalizedValue);
-
-    if (normalizedValue <= 0) {
-      return Color.lerp(null, Colors.blue, normalizedValue.abs())!;
-    } else {
-      return Color.lerp(null, Colors.red, normalizedValue)!;
-    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
+import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/convertions.dart';
@@ -20,6 +21,7 @@ class PotionView extends StatefulWidget {
 class _PotionViewState extends State<PotionView> {
   IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
+  YouController youController = Get.put(YouController());
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,7 @@ class _PotionViewState extends State<PotionView> {
           children: [
             ElevatedButton(
                 onPressed: () async {
+                  if (youController.isFrozen) return;
                   if (potionController.potionState.value != PotionState.empty) {
                     return;
                   }
@@ -60,19 +63,10 @@ class _PotionViewState extends State<PotionView> {
                 child: const Text("Scan Ingredient")),
             ElevatedButton(
                 onPressed: () {
-                  switch (potionController.potionState.value) {
-                    case PotionState.empty:
-                      ingredientController.ingredients.clear();
-                      break;
-                    case PotionState.mixing:
-                      ingredientController.ingredients.clear();
-                      changePotionState(PotionState.empty);
-                      break;
-                    case PotionState.finished:
-                      ingredientController.ingredients.clear();
-                      potionController.potionId.value = 0;
-                      changePotionState(PotionState.empty);
-                  }
+                  if (youController.isFrozen) return;
+                  ingredientController.ingredients.clear();
+                  potionController.potionId.value = 0;
+                  changePotionState(PotionState.empty);
                 },
                 child: const Text("Pour Potion Out"))
           ],
@@ -98,11 +92,13 @@ class EmptyPotion extends StatefulWidget {
 
 class _EmptyPotionState extends State<EmptyPotion> {
   IngredientController ingredientController = Get.put(IngredientController());
+  YouController youController = Get.put(YouController());
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (youController.isFrozen) return;
         widget.changePotionState(PotionState.mixing);
       },
       child: SizedBox(
@@ -145,6 +141,7 @@ class MixingPotion extends StatefulWidget {
 class _MixingPotionState extends State<MixingPotion> {
   IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
+  YouController youController = Get.put(YouController());
   late StreamSubscription accelerometerSubscription;
   RxInt mixLevel = 0.obs;
 
@@ -160,6 +157,7 @@ class _MixingPotionState extends State<MixingPotion> {
     accelerometerSubscription = userAccelerometerEventStream(
             samplingPeriod: const Duration(milliseconds: potionShakeIntervalMs))
         .listen((event) {
+      if (youController.isFrozen) return;
       if (event.x.abs() > potionShakeThreshold ||
           event.y.abs() > potionShakeThreshold ||
           event.z.abs() > potionShakeThreshold) {
