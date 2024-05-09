@@ -83,6 +83,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
+    youController.temperature -= 15;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
     potionController.potionState.value = PotionState.empty;
@@ -124,9 +125,18 @@ class _GamePageState extends State<GamePage> {
   }
 
   void worldUpdate() {
+    // If your temperature is above 10, you take damage
+    if (youController.temperature > 10) youController.health--;
+
+    // If your temperature is below 15, you become frozen
+    youController.isFrozen = youController.temperature < -15;
+
     // Move temperature towards 0
     if (youController.temperature < 0) youController.temperature++;
     if (youController.temperature > 0) youController.temperature--;
+
+    // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
+    if (youController.temperature > 15) youController.temperature = 20;
   }
 }
 
@@ -168,7 +178,7 @@ class _PlayerViewState extends State<PlayerView> {
             ),
           ),
         ),
-        Obx(() => Text(widget.playerController.health.toString()))
+        Obx(() => Text(widget.playerController.isFrozen.toString()))
       ],
     );
   }
