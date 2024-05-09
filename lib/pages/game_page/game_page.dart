@@ -96,11 +96,11 @@ class _GamePageState extends State<GamePage> {
   void youOnDeath() {
     _broadcastChannel
         .sendBroadcastMessage(event: 'opponent_death', payload: {});
-    Get.to(PostGamePage(winnerName: Player().opponentName));
+    Get.to(() => PostGamePage(winnerName: Player().opponentName));
   }
 
   void opponentOnDeath() {
-    Get.to(PostGamePage(winnerName: Player().name));
+    Get.to(() => PostGamePage(winnerName: Player().name));
   }
 
   void updateOpponent(Map<String, dynamic> updates) {

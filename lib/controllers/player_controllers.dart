@@ -12,7 +12,7 @@ class PlayerController extends GetxController {
 
 class YouController extends PlayerController {
   set health(int value) {
-    if (value < 0) {
+    if (value <= 0) {
       value = 0;
       _onDeath();
     }

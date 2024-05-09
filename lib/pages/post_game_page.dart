@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PostGamePage extends StatelessWidget {
   const PostGamePage({super.key, required this.winnerName});
@@ -8,7 +9,17 @@ class PostGamePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('The winner is $winnerName!'),
+        child: Column(
+          children: [
+            Text('The winner is $winnerName!'),
+            const SizedBox(height: 200),
+            ElevatedButton(
+                onPressed: () {
+                  Get.snackbar('No', '');
+                },
+                child: const Text('Play Again'))
+          ],
+        ),
       ),
     );
   }

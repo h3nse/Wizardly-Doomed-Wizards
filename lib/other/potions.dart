@@ -39,7 +39,8 @@ class PotionOfHealing extends Potion {
 
   @override
   void applyPotion() {
-    // gameManager.heal(Constants.potionEffectValues[id]!['Heal']);
+    youController.health += 5;
+    youController.sendUpdates();
   }
 }
 
@@ -48,7 +49,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    youController.health -= 100;
+    youController.health -= 5;
     youController.sendUpdates();
   }
 }
