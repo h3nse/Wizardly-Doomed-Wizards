@@ -119,6 +119,8 @@ class _GamePageState extends State<GamePage> {
 
   void updateOpponent(Map<String, dynamic> updates) {
     opponentController.health = updates['health'];
+    opponentController.temperature = updates['temperature'];
+    opponentController.isFrozen = updates['isFrozen'];
   }
 
   void handlePotionAction(int potionId, bool isThrown) {
@@ -144,5 +146,6 @@ class _GamePageState extends State<GamePage> {
 
     // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
     if (youController.temperature > 15) youController.temperature = 20;
+    youController.sendUpdates();
   }
 }

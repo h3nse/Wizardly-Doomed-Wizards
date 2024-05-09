@@ -25,17 +25,17 @@ class _PlayerViewState extends State<PlayerView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Stack(alignment: AlignmentDirectional.center, children: [
-          GestureDetector(
-            onTap: () {
-              if (widget.disableOnTap) return;
-              widget.onTap();
-            },
-            child: SizedBox(
-              height: 100,
-              width: 100,
-              child: Obx(
-                () => Container(
+        Obx(
+          () => Stack(alignment: AlignmentDirectional.center, children: [
+            GestureDetector(
+              onTap: () {
+                if (widget.disableOnTap) return;
+                widget.onTap();
+              },
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: Container(
                   decoration: BoxDecoration(
                     color: getTemperatureColor(),
                     border: Border.all(
@@ -47,16 +47,16 @@ class _PlayerViewState extends State<PlayerView> {
                 ),
               ),
             ),
-          ),
-          (widget.playerController.isFrozen)
-              // TODO: Find a way to make the height and width 110, without changing the spacing.
-              ? SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Image.asset('assets/FrozenPlayerOverlay.png'),
-                )
-              : Container(),
-        ]),
+            (widget.playerController.isFrozen)
+                // TODO: Find a way to make the height and width 110, without changing the spacing.
+                ? SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset('assets/FrozenOverlay.png'),
+                  )
+                : Container(),
+          ]),
+        ),
         Obx(() => Text(widget.playerController.health.toString()))
       ],
     );

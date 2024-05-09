@@ -54,8 +54,11 @@ class YouController extends PlayerController {
   }
 
   void sendUpdates() {
-    _broadcastChannel.sendBroadcastMessage(
-        event: 'opponent_update', payload: {'health': _health.value});
+    _broadcastChannel.sendBroadcastMessage(event: 'opponent_update', payload: {
+      'health': _health.value,
+      'temperature': _temperature.value,
+      'isFrozen': _isFrozen.value
+    });
   }
 }
 
