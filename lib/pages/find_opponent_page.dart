@@ -5,6 +5,7 @@ import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
 import 'package:wizardly_fucked_wizards/pages/game_countdown_page.dart';
+import 'package:wizardly_fucked_wizards/pages/game_page/game_page.dart';
 import 'package:wizardly_fucked_wizards/pages/incoming_challenge_page.dart';
 import 'package:wizardly_fucked_wizards/pages/outgoing_challenge_page.dart';
 
@@ -153,6 +154,9 @@ class _FindOpponentPageState extends State<FindOpponentPage> {
             ),
             ElevatedButton(
                 onPressed: () {
+                  if (inputFieldController.text.toLowerCase() == 'debug') {
+                    Get.to(() => const GamePage(channelName: 'debug'));
+                  }
                   challengeOpponent(inputFieldController.text);
                 },
                 child: const Text("Challenge Opponent")),

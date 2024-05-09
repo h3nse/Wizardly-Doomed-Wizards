@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -73,6 +75,10 @@ class _GamePageState extends State<GamePage> {
 
     _broadcastChannel.onBroadcast(
         event: 'opponent_death', callback: (_) => opponentOnDeath());
+
+    Timer.periodic(const Duration(milliseconds: tickDelayMs), (timer) {
+      worldUpdate();
+    });
     super.initState();
   }
 
@@ -115,6 +121,12 @@ class _GamePageState extends State<GamePage> {
 
     PotionFactory.getPotionById(potionId).applyPotion();
     // Animation
+  }
+
+  void worldUpdate() {
+    // Move temperature towards 0
+    if (youController.temperature < 0) youController.temperature++;
+    if (youController.temperature > 0) youController.temperature--;
   }
 }
 
