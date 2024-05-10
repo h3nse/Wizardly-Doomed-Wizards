@@ -22,6 +22,12 @@ class PlayerController extends GetxController {
   set isFrozen(bool value) {
     _isFrozen.value = value;
   }
+
+  void reset() {
+    _health.value = startingHealth;
+    _temperature.value = 0;
+    _isFrozen.value = false;
+  }
 }
 
 class YouController extends PlayerController {

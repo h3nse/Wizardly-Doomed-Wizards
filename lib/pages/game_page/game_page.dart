@@ -16,6 +16,7 @@ import 'player_view.dart';
 
 // TODO: Show players who is drinking/throwing what.
 // TODO: Implement conditions
+// TODO: Connect coldness to mix speed
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key, required this.channelName});
@@ -88,8 +89,13 @@ class _GamePageState extends State<GamePage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _broadcastChannel.unsubscribe();
+    super.dispose();
+  }
+
   void youOnTap() {
-    youController.temperature = -20;
     if (potionController.potionState.value != PotionState.finished) return;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
@@ -110,11 +116,17 @@ class _GamePageState extends State<GamePage> {
   void youOnDeath() {
     _broadcastChannel
         .sendBroadcastMessage(event: 'opponent_death', payload: {});
-    Get.to(() => PostGamePage(winnerName: Player().opponentName));
+    Get.to(() => PostGamePage(
+          winnerName: Player().opponentName,
+          channelName: widget.channelName,
+        ));
   }
 
   void opponentOnDeath() {
-    Get.to(() => PostGamePage(winnerName: Player().name));
+    Get.to(() => PostGamePage(
+          winnerName: Player().name,
+          channelName: widget.channelName,
+        ));
   }
 
   void updateOpponent(Map<String, dynamic> updates) {
@@ -138,7 +150,7 @@ class _GamePageState extends State<GamePage> {
     if (youController.temperature > 10) youController.health--;
 
     // If your temperature is below 15, you become frozen
-    youController.isFrozen = youController.temperature < -15;
+    youController.isFrozen = youController.temperature < -18;
 
     // Move temperature towards 0
     if (youController.temperature < 0) youController.temperature++;

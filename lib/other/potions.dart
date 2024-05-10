@@ -11,7 +11,9 @@ class PotionFactory {
       case 2:
         return ExplodingPotion();
       case 3:
-        return PotionOfStoneskin();
+        return PotionOfHeat();
+      case 4:
+        return PotionOfCold();
       default:
         throw Exception("Invalid Potion ID: $id");
     }
@@ -54,32 +56,23 @@ class ExplodingPotion extends Potion {
   }
 }
 
-class PotionOfStoneskin extends Potion {
-  PotionOfStoneskin() : super("Potion of Stoneskin");
+class PotionOfHeat extends Potion {
+  PotionOfHeat() : super("Potion of Heat");
 
   @override
   void applyPotion() {
-    // final stoneskinEffect = Stoneskin();
-
-    // stoneskinEffect.setGameManager(gameManager);
-    // gameManager.addPlayerEffect(stoneskinEffect);
+    youController.temperature += 15;
+    youController.sendUpdates();
   }
 }
 
-class PotionOfExplodingHealth extends Potion {
-  PotionOfExplodingHealth() : super("Potion of Exploding Health");
+class PotionOfCold extends Potion {
+  PotionOfCold() : super("Potion of Cold");
 
   @override
   void applyPotion() {
-    // final variation = Constants.potionEffectValues[id]!['Variation'];
-    // final random = Random();
-    // final zeroOrOne = random.nextInt(2);
-    // final amount = 1 + random.nextInt(variation - 1);
-    // if (zeroOrOne == 0) {
-    //   gameManager.heal(amount.toDouble());
-    // } else {
-    //   gameManager.takeDamage(-amount.toDouble());
-    // }
+    youController.temperature -= 15;
+    youController.sendUpdates();
   }
 }
 
