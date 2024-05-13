@@ -7,11 +7,15 @@ class PlayerController extends GetxController {
   final RxInt _temperature = 0.obs;
   final RxBool _isFrozen = false.obs;
   final RxBool _isCharged = false.obs;
+  final RxBool _isOvercharged = false.obs;
+  final RxBool _isWet = false.obs;
 
   int get health => _health.value;
   int get temperature => _temperature.value;
   bool get isFrozen => _isFrozen.value;
   bool get isCharged => _isCharged.value;
+  bool get isOvercharged => _isOvercharged.value;
+  bool get isWet => _isWet.value;
 
   set health(int value) {
     _health.value = value;
@@ -27,6 +31,14 @@ class PlayerController extends GetxController {
 
   set isCharged(bool value) {
     _isCharged.value = value;
+  }
+
+  set isOvercharged(bool value) {
+    _isOvercharged.value = value;
+  }
+
+  set isWet(bool value) {
+    _isWet.value = value;
   }
 
   void reset() {

@@ -39,7 +39,7 @@ class _PlayerViewState extends State<PlayerView> {
                   width: 100,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: getTemperatureColor(),
+                      color: _getTemperatureColor(),
                       border: Border.all(
                           width: 2,
                           color: Theme.of(context).colorScheme.primary),
@@ -50,13 +50,13 @@ class _PlayerViewState extends State<PlayerView> {
                   ),
                 ),
               ),
-              (widget.playerController.isFrozen)
-                  ? SizedBox(
-                      height: 110,
-                      width: 110,
-                      child: Image.asset('assets/FrozenOverlay.png'),
-                    )
-                  : Container(),
+              SizedBox(
+                height: 110,
+                width: 110,
+                child: Stack(
+                  children: _buildOverlayWidgets(),
+                ),
+              )
             ]),
           ),
           Obx(() => Text(widget.playerController.health.toString()))
@@ -65,7 +65,7 @@ class _PlayerViewState extends State<PlayerView> {
     );
   }
 
-  Color getTemperatureColor() {
+  Color _getTemperatureColor() {
     double normalizedValue =
         widget.playerController.temperature / temperatureLimitMax;
 
@@ -74,5 +74,27 @@ class _PlayerViewState extends State<PlayerView> {
     } else {
       return Color.lerp(null, Colors.red, normalizedValue)!;
     }
+  }
+
+  List<Image> _buildOverlayWidgets() {
+    List<Image> overlays = [];
+
+    if (widget.playerController.isFrozen) {
+      overlays.add(Image.asset('assets/PlayerFrozenOverlay.png'));
+    }
+
+    if (widget.playerController.isCharged) {
+      overlays.add(Image.asset('assets/PlayerChargedOverlay.png'));
+    }
+
+    if (widget.playerController.isOvercharged) {
+      overlays.add(Image.asset('assets/PlayerOverchargedOverlay.png'));
+    }
+
+    if (widget.playerController.isWet) {
+      overlays.add(Image.asset('assets/PlayerWetOverlay.png'));
+    }
+
+    return overlays;
   }
 }
