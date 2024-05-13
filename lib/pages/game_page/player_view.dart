@@ -23,42 +23,45 @@ class PlayerView extends StatefulWidget {
 class _PlayerViewState extends State<PlayerView> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Obx(
-          () => Stack(alignment: AlignmentDirectional.center, children: [
-            GestureDetector(
-              onTap: () {
-                if (widget.disableOnTap) return;
-                widget.onTap();
-              },
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: getTemperatureColor(),
-                    border: Border.all(
-                        width: 2, color: Theme.of(context).colorScheme.primary),
-                  ),
-                  child: Center(
-                    child: Text(widget.name),
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Obx(
+            () => Stack(alignment: AlignmentDirectional.center, children: [
+              GestureDetector(
+                onTap: () {
+                  if (widget.disableOnTap) return;
+                  widget.onTap();
+                },
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: getTemperatureColor(),
+                      border: Border.all(
+                          width: 2,
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                    child: Center(
+                      child: Text(widget.name),
+                    ),
                   ),
                 ),
               ),
-            ),
-            (widget.playerController.isFrozen)
-                // TODO: Find a way to make the height and width 110, without changing the spacing.
-                ? SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: Image.asset('assets/FrozenOverlay.png'),
-                  )
-                : Container(),
-          ]),
-        ),
-        Obx(() => Text(widget.playerController.health.toString()))
-      ],
+              (widget.playerController.isFrozen)
+                  ? SizedBox(
+                      height: 110,
+                      width: 110,
+                      child: Image.asset('assets/FrozenOverlay.png'),
+                    )
+                  : Container(),
+            ]),
+          ),
+          Obx(() => Text(widget.playerController.health.toString()))
+        ],
+      ),
     );
   }
 

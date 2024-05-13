@@ -6,10 +6,12 @@ class PlayerController extends GetxController {
   final RxInt _health = startingHealth.obs;
   final RxInt _temperature = 0.obs;
   final RxBool _isFrozen = false.obs;
+  final RxBool _isCharged = false.obs;
 
   int get health => _health.value;
   int get temperature => _temperature.value;
   bool get isFrozen => _isFrozen.value;
+  bool get isCharged => _isCharged.value;
 
   set health(int value) {
     _health.value = value;
@@ -23,10 +25,15 @@ class PlayerController extends GetxController {
     _isFrozen.value = value;
   }
 
+  set isCharged(bool value) {
+    _isCharged.value = value;
+  }
+
   void reset() {
     _health.value = startingHealth;
     _temperature.value = 0;
     _isFrozen.value = false;
+    _isCharged.value = false;
   }
 }
 
@@ -70,19 +77,20 @@ class YouController extends PlayerController {
     sendUpdates();
   }
 
-  void setBroadcastChannel(RealtimeChannel broadcastChannel) {
-    _broadcastChannel = broadcastChannel;
-  }
-
   void setOnDeath(Function onDeath) {
     _onDeath = onDeath;
+  }
+
+  void setBroadcastChannel(RealtimeChannel broadcastChannel) {
+    _broadcastChannel = broadcastChannel;
   }
 
   void sendUpdates() {
     _broadcastChannel.sendBroadcastMessage(event: 'opponent_update', payload: {
       'health': _health.value,
       'temperature': _temperature.value,
-      'isFrozen': _isFrozen.value
+      'isFrozen': _isFrozen.value,
+      'isCharged': _isCharged.value
     });
   }
 }

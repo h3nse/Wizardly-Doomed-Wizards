@@ -41,25 +41,27 @@ class _GamePageState extends State<GamePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  PlayerView(
-                    name: "You",
-                    onTap: youOnTap,
-                    playerController: youController,
-                    disableOnTap: youController.isFrozen,
-                  ),
-                  PlayerView(
-                    name: "Opponent",
-                    onTap: opponentOnTap,
-                    playerController: opponentController,
-                    disableOnTap: youController.isFrozen,
-                  )
-                ],
+              () => Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    PlayerView(
+                      name: "You",
+                      onTap: youOnTap,
+                      playerController: youController,
+                      disableOnTap: youController.isFrozen,
+                    ),
+                    PlayerView(
+                      name: "Opponent",
+                      onTap: opponentOnTap,
+                      playerController: opponentController,
+                      disableOnTap: youController.isFrozen,
+                    )
+                  ],
+                ),
               ),
             ),
-            const PotionView(),
+            const Expanded(child: PotionView()),
           ],
         ),
       ),
