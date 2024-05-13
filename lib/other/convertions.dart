@@ -6,7 +6,7 @@ final idToIngredient = {
   5: 'Fire Bloom',
   // 6: 'Beetle Shell',
   // 7: '4 Leaf clover',
-  // 8: 'Serpents fang',
+  // 8: 'Serpent\'s fang',
   // 9: 'Dragons eye',
   // 10: 'Lightning in a bottle'
 };

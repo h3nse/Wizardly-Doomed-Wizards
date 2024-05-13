@@ -41,8 +41,7 @@ class PotionOfHealing extends Potion {
 
   @override
   void applyPotion() {
-    youController.health += 5;
-    youController.sendUpdates();
+    youController.heal(5);
   }
 }
 
@@ -51,8 +50,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    youController.health -= 5;
-    youController.sendUpdates();
+    youController.takeDamage(5);
   }
 }
 

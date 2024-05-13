@@ -33,6 +33,15 @@ class PlayerController extends GetxController {
 class YouController extends PlayerController {
   late RealtimeChannel _broadcastChannel;
   late Function _onDeath;
+  final RxDouble _damageMultiplier = 1.0.obs;
+  final RxDouble _healMultiplier = 1.0.obs;
+
+  double get damageMultiplier => _damageMultiplier.value;
+  double get healMultiplier => _healMultiplier.value;
+
+  set damageMultiplier(double value) {
+    _damageMultiplier.value = value;
+  }
 
   @override
   set health(int value) {
@@ -49,6 +58,16 @@ class YouController extends PlayerController {
     if (value <= temperatureLimitMin) value = temperatureLimitMin;
     if (value >= temperatureLimitMax) value = temperatureLimitMax;
     _temperature.value = value;
+  }
+
+  void heal(int amount) {
+    health += (amount * healMultiplier).floor();
+    sendUpdates();
+  }
+
+  void takeDamage(int amount) {
+    health -= (amount * damageMultiplier).floor();
+    sendUpdates();
   }
 
   void setBroadcastChannel(RealtimeChannel broadcastChannel) {

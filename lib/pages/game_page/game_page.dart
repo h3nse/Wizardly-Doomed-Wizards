@@ -28,6 +28,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   late final RealtimeChannel _broadcastChannel;
+  late final Timer timer;
   PotionController potionController = Get.put(PotionController());
   YouController youController = Get.put(YouController());
   OpponentController opponentController = Get.put(OpponentController());
@@ -83,7 +84,7 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel.onBroadcast(
         event: 'opponent_death', callback: (_) => opponentOnDeath());
 
-    Timer.periodic(const Duration(milliseconds: tickDelayMs), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: tickDelayMs), (timer) {
       worldUpdate();
     });
     super.initState();
@@ -92,6 +93,7 @@ class _GamePageState extends State<GamePage> {
   @override
   void dispose() {
     _broadcastChannel.unsubscribe();
+    timer.cancel();
     super.dispose();
   }
 
@@ -151,6 +153,7 @@ class _GamePageState extends State<GamePage> {
 
     // If your temperature is below 15, you become frozen
     youController.isFrozen = youController.temperature < -18;
+    if (youController.temperature < -15) youController.damageMultiplier = 2.0;
 
     // Move temperature towards 0
     if (youController.temperature < 0) youController.temperature++;
