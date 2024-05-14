@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
+
+const int lightningInAPotionID = 7;
+const int overchargeID = 8;
 
 class PotionFactory {
   static Potion getPotionById(int id) {
@@ -14,6 +18,14 @@ class PotionFactory {
         return PotionOfHeat();
       case 4:
         return PotionOfCold();
+      case 5:
+        return PotionOfDarkSkies();
+      case 6:
+        return PotionOfThunder();
+      case lightningInAPotionID:
+        return LightningInAPotion();
+      case overchargeID:
+        return Overcharge();
       default:
         throw Exception("Invalid Potion ID: $id");
     }
@@ -50,7 +62,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    youController.takePhysicalDamage(5);
+    youController.takeDamage(5);
   }
 }
 
@@ -60,7 +72,6 @@ class PotionOfHeat extends Potion {
   @override
   void applyPotion() {
     youController.temperature += 15;
-    youController.sendUpdates();
   }
 }
 
@@ -73,73 +84,54 @@ class PotionOfCold extends Potion {
   }
 }
 
-class PotionOfRegeneration extends Potion {
-  PotionOfRegeneration() : super("Potion of Regeneration");
+class PotionOfDarkSkies extends Potion {
+  PotionOfDarkSkies() : super("Potion of Dark Skies");
+
+  final int secondsPerTick = 1;
+  final int ticks = 5;
 
   @override
   void applyPotion() {
-    // final regenEffect = Regenerating();
+    int counter = 0;
+    youController.hasRainCloud = true;
+    Timer.periodic(Duration(seconds: secondsPerTick), (timer) {
+      counter++;
 
-    // final regenDuration = Constants.potionEffectValues[id]!['Duration'];
-    // final durationTimer = Timer(Duration(seconds: regenDuration + 1),
-    //     () => gameManager.removePlayerEffect(regenEffect.name));
+      youController.isWet = true;
 
-    // regenEffect.setGameManager(gameManager);
-    // regenEffect.setDurationTimer(durationTimer);
-    // gameManager.addPlayerEffect(regenEffect);
+      if (counter == ticks) {
+        timer.cancel();
+        youController.hasRainCloud = false;
+      }
+    });
   }
 }
 
-class PotionOfDelayedExplosion extends Potion {
-  PotionOfDelayedExplosion() : super("Potion of Delayed Explosion");
+class PotionOfThunder extends Potion {
+  PotionOfThunder() : super("Potion of Thunder");
 
   @override
   void applyPotion() {
-    // final aboutToExplodeEffect = AboutToExplode();
-    // final explosionDelay = Constants.potionEffectValues[id]!['ExplosionDelay'];
-    // final damage = Constants.potionEffectValues[id]!['Damage'];
-
-    // final timer = Timer(Duration(seconds: explosionDelay), () {
-    //   gameManager.takeDamage(damage);
-    //   gameManager.removePlayerEffect(aboutToExplodeEffect.name);
-    // });
-
-    // aboutToExplodeEffect.setDurationTimer(timer);
-    // gameManager.addPlayerEffect(aboutToExplodeEffect);
+    youController.takeDamage(10);
+    youController.isCharged = true;
   }
 }
 
-class PotionOfFlames extends Potion {
-  PotionOfFlames() : super("Potion of Flames");
+class LightningInAPotion extends Potion {
+  LightningInAPotion() : super("Lightning in a Potion");
 
   @override
   void applyPotion() {
-    // final burningEffect = Burning();
-
-    // final burnDuration = Constants.potionEffectValues[id]!['Duration'];
-    // final durationTimer = Timer(Duration(seconds: burnDuration + 1),
-    //     () => gameManager.removePlayerEffect(burningEffect.name));
-
-    // burningEffect.setGameManager(gameManager);
-    // burningEffect.setDurationTimer(durationTimer);
-    // gameManager.addPlayerEffect(burningEffect);
+    youController.isCharged = true;
   }
 }
 
-class PotionOfIncendiary extends Potion {
-  PotionOfIncendiary() : super("Potion of Incendiary");
+class Overcharge extends Potion {
+  Overcharge() : super("Overcharge");
 
   @override
   void applyPotion() {
-    // gameManager.takeDamage(Constants.potionEffectValues[id]!['Damage']);
-    // final burningEffect = Burning();
-    // final burnDuration = Constants.potionEffectValues[id]!['Duration'];
-
-    // final durationTImer = Timer(Duration(seconds: burnDuration + 1),
-    //     () => gameManager.removePlayerEffect(burningEffect.name));
-
-    // burningEffect.setGameManager(gameManager);
-    // burningEffect.setDurationTimer(durationTImer);
-    // gameManager.addPlayerEffect(burningEffect);
+    youController.takeDamage(40);
+    youController.isCharged = true;
   }
 }

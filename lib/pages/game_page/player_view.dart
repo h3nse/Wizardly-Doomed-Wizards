@@ -24,42 +24,56 @@ class _PlayerViewState extends State<PlayerView> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Obx(
-            () => GestureDetector(
-              onTap: () {
-                if (widget.disableOnTap) return;
-                widget.onTap();
-              },
-              child: Stack(
-                alignment: AlignmentDirectional.center,
-                children: [
-                  ...[
-                    SizedBox(
+      child: Obx(
+        () => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Expanded(child: SizedBox()),
+            Expanded(
+              flex: 2,
+              child: (widget.playerController.hasRainCloud)
+                  ? SizedBox(
                       height: 100,
-                      width: 100,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: _getTemperatureColor(),
-                          border: Border.all(
-                              width: 2,
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
-                        child: Center(
-                          child: Text(widget.name),
+                      child: Image.asset('assets/PlayerRainCloud.png'),
+                    )
+                  : Container(),
+            ),
+            Expanded(
+              flex: 3,
+              child: GestureDetector(
+                onTap: () {
+                  if (widget.disableOnTap) return;
+                  widget.onTap();
+                },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    ...[
+                      SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: _getTemperatureColor(),
+                            border: Border.all(
+                                width: 2,
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                          child: Center(
+                            child: Text(widget.name),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+                    ..._buildOverlayWidgets()
                   ],
-                  ..._buildOverlayWidgets()
-                ],
+                ),
               ),
             ),
-          ),
-          Obx(() => Text(widget.playerController.health.toString()))
-        ],
+            Expanded(
+                flex: 3, child: Text(widget.playerController.health.toString()))
+          ],
+        ),
       ),
     );
   }

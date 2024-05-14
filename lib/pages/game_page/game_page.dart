@@ -16,6 +16,7 @@ import 'player_view.dart';
 
 // TODO: Show players who is drinking/throwing what.
 // TODO: Connect coldness to mix speed
+// TODO: Add raincloud indicator
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key, required this.channelName});
@@ -106,7 +107,6 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
-    youController.isWet = true;
     if (potionController.potionState.value != PotionState.finished) return;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
@@ -115,7 +115,6 @@ class _GamePageState extends State<GamePage> {
   }
 
   void opponentOnTap() {
-    youController.cool(10);
     _broadcastChannel.sendBroadcastMessage(event: 'potion_action', payload: {
       'potionId': potionController.potionId.value,
       'isThrown': true
@@ -145,6 +144,10 @@ class _GamePageState extends State<GamePage> {
     opponentController.health = updates['health'];
     opponentController.temperature = updates['temperature'];
     opponentController.isFrozen = updates['isFrozen'];
+    opponentController.isCharged = updates['isCharged'];
+    opponentController.isOvercharged = updates['isOvercharged'];
+    opponentController.isWet = updates['isWet'];
+    opponentController.hasRainCloud = updates['hasRainCloud'];
   }
 
   void handlePotionAction(int potionId, bool isThrown) {
@@ -189,7 +192,10 @@ class _GamePageState extends State<GamePage> {
     }
 
     // If your temperature is below a certain point, you become frozen
-    youController.isFrozen = youController.temperature < freezeThreshold;
+    if (youController.temperature < freezeThreshold) {
+      youController.isFrozen = true;
+      youController.isWet = false;
+    }
 
     // If you are charged and wet, you take damage and lose your charge
     if (youController.isCharged && youController.isWet) {
@@ -198,13 +204,12 @@ class _GamePageState extends State<GamePage> {
         damage = damage * 2;
         youController.isOvercharged = false;
       }
-      youController.health -= damage;
+      youController.takeDamage(damage);
       youController.isCharged = false;
     }
 
     // If you are overcharged, your temperature is at max
-    if (youController.isOvercharged &&
-        youController.temperature != temperatureLimitMax) {
+    if (youController.isOvercharged) {
       youController.temperature = temperatureLimitMax;
     }
 

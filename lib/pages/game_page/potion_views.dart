@@ -44,7 +44,7 @@ class _PotionViewState extends State<PotionView> {
               potionView = Obx(() =>
                   FinishedPotion(potionId: potionController.potionId.value));
           }
-          return potionView;
+          return SizedBox(height: 200, width: 200, child: potionView);
         }),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -101,28 +101,24 @@ class _EmptyPotionState extends State<EmptyPotion> {
         if (youController.isFrozen) return;
         widget.changePotionState(PotionState.mixing);
       },
-      child: SizedBox(
-        height: 200,
-        width: 200,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-                width: 2, color: Theme.of(context).colorScheme.primary),
-          ),
-          child: Center(
-            child: Column(
-              children: [
-                const Text('Empty Potion'),
-                Obx(
-                  () => ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: ingredientController.ingredients.length,
-                    itemBuilder: (context, index) => Text(idToIngredient[
-                        ingredientController.ingredients[index]]!),
-                  ),
-                )
-              ],
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+              width: 2, color: Theme.of(context).colorScheme.primary),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              const Text('Empty Potion'),
+              Obx(
+                () => ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: ingredientController.ingredients.length,
+                  itemBuilder: (context, index) => Text(
+                      idToIngredient[ingredientController.ingredients[index]]!),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -188,6 +184,18 @@ class _MixingPotionState extends State<MixingPotion> {
       if (eq(ingredientsToPotion[i][1], ingredients)) {
         potionId = ingredientsToPotion[i][0];
         break;
+      }
+    }
+    if (potionId == lightningInAPotionID || potionId == overchargeID) {
+      if (youController.isOvercharged) {
+        potionId = overchargeID;
+        youController.isOvercharged = false;
+        youController.isCharged = false;
+      } else if (youController.isCharged) {
+        potionId = lightningInAPotionID;
+        youController.isCharged = false;
+      } else {
+        potionId = 0;
       }
     }
     potionController.potionId.value = potionId;

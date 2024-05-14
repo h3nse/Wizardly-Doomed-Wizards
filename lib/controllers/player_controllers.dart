@@ -9,6 +9,7 @@ class PlayerController extends GetxController {
   final RxBool _isCharged = false.obs;
   final RxBool _isOvercharged = false.obs;
   final RxBool _isWet = false.obs;
+  final RxBool _hasRainCloud = false.obs;
 
   int get health => _health.value;
   int get temperature => _temperature.value;
@@ -16,6 +17,7 @@ class PlayerController extends GetxController {
   bool get isCharged => _isCharged.value;
   bool get isOvercharged => _isOvercharged.value;
   bool get isWet => _isWet.value;
+  bool get hasRainCloud => _hasRainCloud.value;
 
   set health(int value) {
     _health.value = value;
@@ -41,6 +43,10 @@ class PlayerController extends GetxController {
     _isWet.value = value;
   }
 
+  set hasRainCloud(bool value) {
+    _hasRainCloud.value = value;
+  }
+
   void reset() {
     _health.value = startingHealth;
     _temperature.value = 0;
@@ -48,6 +54,7 @@ class PlayerController extends GetxController {
     _isCharged.value = false;
     _isOvercharged.value = false;
     _isWet.value = false;
+    _hasRainCloud.value = false;
   }
 }
 
@@ -92,12 +99,10 @@ class YouController extends PlayerController {
 
   void heal(int amount) {
     health += (amount * healMultiplier).floor();
-    sendUpdates();
   }
 
-  void takePhysicalDamage(int amount) {
+  void takeDamage(int amount) {
     health -= (amount * damageMultiplier).floor();
-    sendUpdates();
   }
 
   void cool(int amount) {
@@ -106,7 +111,6 @@ class YouController extends PlayerController {
     } else {
       temperature -= amount;
     }
-    sendUpdates();
   }
 
   void setOnDeath(Function onDeath) {
@@ -122,7 +126,10 @@ class YouController extends PlayerController {
       'health': _health.value,
       'temperature': _temperature.value,
       'isFrozen': _isFrozen.value,
-      'isCharged': _isCharged.value
+      'isCharged': _isCharged.value,
+      'isOvercharged': _isOvercharged.value,
+      'isWet': _isWet.value,
+      'hasRainCloud': _hasRainCloud.value,
     });
   }
 }
