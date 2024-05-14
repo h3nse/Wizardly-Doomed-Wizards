@@ -50,7 +50,7 @@ class ExplodingPotion extends Potion {
 
   @override
   void applyPotion() {
-    youController.takeDamage(5);
+    youController.takePhysicalDamage(5);
   }
 }
 

@@ -15,7 +15,6 @@ import 'package:wizardly_fucked_wizards/pages/post_game_page.dart';
 import 'player_view.dart';
 
 // TODO: Show players who is drinking/throwing what.
-// TODO: Implement conditions
 // TODO: Connect coldness to mix speed
 
 class GamePage extends StatefulWidget {
@@ -28,7 +27,8 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   late final RealtimeChannel _broadcastChannel;
-  late final Timer timer;
+  late final Timer updateTimer;
+  late final Timer temperatureTimer;
   PotionController potionController = Get.put(PotionController());
   YouController youController = Get.put(YouController());
   OpponentController opponentController = Get.put(OpponentController());
@@ -86,7 +86,12 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel.onBroadcast(
         event: 'opponent_death', callback: (_) => opponentOnDeath());
 
-    timer = Timer.periodic(const Duration(milliseconds: tickDelayMs), (timer) {
+    updateTimer = Timer.periodic(
+        const Duration(milliseconds: temperatureDelayMs), (timer) {
+      temperatureUpdate();
+    });
+    temperatureTimer =
+        Timer.periodic(const Duration(milliseconds: updateDelayMs), (timer) {
       worldUpdate();
     });
     super.initState();
@@ -95,7 +100,8 @@ class _GamePageState extends State<GamePage> {
   @override
   void dispose() {
     _broadcastChannel.unsubscribe();
-    timer.cancel();
+    updateTimer.cancel();
+    temperatureTimer.cancel();
     super.dispose();
   }
 
@@ -151,51 +157,64 @@ class _GamePageState extends State<GamePage> {
     // Animation
   }
 
-  int temperatureTickCounter = 0;
-
-  void worldUpdate() {
-    temperatureTickCounter++;
-    if (temperatureTickCounter == ticksPerTemperatureUpdate) {
-      print(youController.temperature);
-      temperatureTickCounter = 0;
-      // If your temperature is above 10, you take damage
-      if (youController.temperature > 10) {
-        youController.health--;
-        if (youController.isWet) {
-          youController.temperature -= 5;
-          youController.isWet = false;
-        }
+  void temperatureUpdate() {
+    // Move temperature towards 0
+    if (!youController.isOvercharged &&
+        !(youController.temperature == temperatureLimitMax)) {
+      int tempChange = 1;
+      if (youController.isCharged) tempChange = 2;
+      if (youController.temperature < 0) {
+        youController.temperature += tempChange;
+      }
+      if (youController.temperature > 0) {
+        youController.temperature -= tempChange;
       }
 
-      // Move temperature towards 0
-      if (!youController.isOvercharged) {
-        int tempAdd = 1;
-        if (youController.isCharged) tempAdd = 2;
-        if (youController.temperature < 0) youController.temperature += tempAdd;
-        if (youController.temperature > 0) youController.temperature -= tempAdd;
+      // If your temperature is above a certain point, you catch fire and have have a permanent temperature of 20
+      if (youController.temperature > fireThreshold) {
+        youController.temperature = temperatureLimitMax;
       }
-
-      // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
-      if (youController.temperature > 15) youController.temperature = 20;
     }
 
-    if (youController.isOvercharged) {
+    // If your temperature is above a certain point, you take damage
+    if (youController.temperature > heatDamageThreshold) {
+      youController.health--;
+    }
+  }
+
+  void worldUpdate() {
+    // If your temperature is below a certain point, you take more damage from physical attacks
+    if (youController.temperature < brittleThreshold) {
+      youController.damageMultiplier = 2.0;
+    }
+
+    // If your temperature is below a certain point, you become frozen
+    youController.isFrozen = youController.temperature < freezeThreshold;
+
+    // If you are charged and wet, you take damage and lose your charge
+    if (youController.isCharged && youController.isWet) {
+      int damage = wetAndChargedDamage;
+      if (youController.isOvercharged) {
+        damage = damage * 2;
+        youController.isOvercharged = false;
+      }
+      youController.health -= damage;
+      youController.isCharged = false;
+    }
+
+    // If you are overcharged, your temperature is at max
+    if (youController.isOvercharged &&
+        youController.temperature != temperatureLimitMax) {
       youController.temperature = temperatureLimitMax;
     }
 
-    // If your temperature is below 15, you become frozen
-    youController.isFrozen = youController.temperature < -18;
-    if (youController.temperature < -15) youController.damageMultiplier = 2.0;
-
-    if (youController.isCharged && youController.isWet) {
-      if (youController.isOvercharged) {
-        youController.health -= 20;
-        youController.isOvercharged = false;
-      } else {
-        youController.health -= 10;
-      }
-      youController.isCharged = false;
+    // If you're wet and your temperature is above a certain point, your temperature goes down and you become dry
+    if (youController.isWet &&
+        youController.temperature > wetCooldownThreshold) {
+      youController.temperature -= wetCooldownAmount;
+      youController.isWet = false;
     }
+
     youController.sendUpdates();
   }
 }

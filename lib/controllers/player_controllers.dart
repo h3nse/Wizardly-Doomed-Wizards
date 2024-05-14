@@ -95,7 +95,7 @@ class YouController extends PlayerController {
     sendUpdates();
   }
 
-  void takeDamage(int amount) {
+  void takePhysicalDamage(int amount) {
     health -= (amount * damageMultiplier).floor();
     sendUpdates();
   }
