@@ -28,36 +28,35 @@ class _PlayerViewState extends State<PlayerView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Obx(
-            () => Stack(alignment: AlignmentDirectional.center, children: [
-              GestureDetector(
-                onTap: () {
-                  if (widget.disableOnTap) return;
-                  widget.onTap();
-                },
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: _getTemperatureColor(),
-                      border: Border.all(
-                          width: 2,
-                          color: Theme.of(context).colorScheme.primary),
+            () => GestureDetector(
+              onTap: () {
+                if (widget.disableOnTap) return;
+                widget.onTap();
+              },
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  ...[
+                    SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _getTemperatureColor(),
+                          border: Border.all(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        child: Center(
+                          child: Text(widget.name),
+                        ),
+                      ),
                     ),
-                    child: Center(
-                      child: Text(widget.name),
-                    ),
-                  ),
-                ),
+                  ],
+                  ..._buildOverlayWidgets()
+                ],
               ),
-              SizedBox(
-                height: 110,
-                width: 110,
-                child: Stack(
-                  children: _buildOverlayWidgets(),
-                ),
-              )
-            ]),
+            ),
           ),
           Obx(() => Text(widget.playerController.health.toString()))
         ],
@@ -76,23 +75,35 @@ class _PlayerViewState extends State<PlayerView> {
     }
   }
 
-  List<Image> _buildOverlayWidgets() {
-    List<Image> overlays = [];
+  List<Widget> _buildOverlayWidgets() {
+    List<Widget> overlays = [];
 
     if (widget.playerController.isFrozen) {
-      overlays.add(Image.asset('assets/PlayerFrozenOverlay.png'));
+      overlays.add(SizedBox(
+          height: 110,
+          width: 110,
+          child: Image.asset('assets/PlayerFrozenOverlay.png')));
     }
 
     if (widget.playerController.isCharged) {
-      overlays.add(Image.asset('assets/PlayerChargedOverlay.png'));
+      overlays.add(SizedBox(
+          height: 110,
+          width: 110,
+          child: Image.asset('assets/PlayerChargedOverlay.png')));
     }
 
     if (widget.playerController.isOvercharged) {
-      overlays.add(Image.asset('assets/PlayerOverchargedOverlay.png'));
+      overlays.add(SizedBox(
+          height: 110,
+          width: 110,
+          child: Image.asset('assets/PlayerOverchargedOverlay.png')));
     }
 
     if (widget.playerController.isWet) {
-      overlays.add(Image.asset('assets/PlayerWetOverlay.png'));
+      overlays.add(SizedBox(
+          height: 110,
+          width: 110,
+          child: Image.asset('assets/PlayerWetOverlay.png')));
     }
 
     return overlays;

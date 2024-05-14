@@ -100,6 +100,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void youOnTap() {
+    youController.isWet = true;
     if (potionController.potionState.value != PotionState.finished) return;
     PotionFactory.getPotionById(potionController.potionId.value).applyPotion();
     potionController.potionId.value = 0;
@@ -108,6 +109,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void opponentOnTap() {
+    youController.cool(10);
     _broadcastChannel.sendBroadcastMessage(event: 'potion_action', payload: {
       'potionId': potionController.potionId.value,
       'isThrown': true
@@ -149,20 +151,51 @@ class _GamePageState extends State<GamePage> {
     // Animation
   }
 
+  int temperatureTickCounter = 0;
+
   void worldUpdate() {
-    // If your temperature is above 10, you take damage
-    if (youController.temperature > 10) youController.health--;
+    temperatureTickCounter++;
+    if (temperatureTickCounter == ticksPerTemperatureUpdate) {
+      print(youController.temperature);
+      temperatureTickCounter = 0;
+      // If your temperature is above 10, you take damage
+      if (youController.temperature > 10) {
+        youController.health--;
+        if (youController.isWet) {
+          youController.temperature -= 5;
+          youController.isWet = false;
+        }
+      }
+
+      // Move temperature towards 0
+      if (!youController.isOvercharged) {
+        int tempAdd = 1;
+        if (youController.isCharged) tempAdd = 2;
+        if (youController.temperature < 0) youController.temperature += tempAdd;
+        if (youController.temperature > 0) youController.temperature -= tempAdd;
+      }
+
+      // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
+      if (youController.temperature > 15) youController.temperature = 20;
+    }
+
+    if (youController.isOvercharged) {
+      youController.temperature = temperatureLimitMax;
+    }
 
     // If your temperature is below 15, you become frozen
     youController.isFrozen = youController.temperature < -18;
     if (youController.temperature < -15) youController.damageMultiplier = 2.0;
 
-    // Move temperature towards 0
-    if (youController.temperature < 0) youController.temperature++;
-    if (youController.temperature > 0) youController.temperature--;
-
-    // If your temperature is above 15, you catch fire and have have a permanent temperature of 20
-    if (youController.temperature > 15) youController.temperature = 20;
+    if (youController.isCharged && youController.isWet) {
+      if (youController.isOvercharged) {
+        youController.health -= 20;
+        youController.isOvercharged = false;
+      } else {
+        youController.health -= 10;
+      }
+      youController.isCharged = false;
+    }
     youController.sendUpdates();
   }
 }

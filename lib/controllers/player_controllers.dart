@@ -46,6 +46,8 @@ class PlayerController extends GetxController {
     _temperature.value = 0;
     _isFrozen.value = false;
     _isCharged.value = false;
+    _isOvercharged.value = false;
+    _isWet.value = false;
   }
 }
 
@@ -79,6 +81,15 @@ class YouController extends PlayerController {
     _temperature.value = value;
   }
 
+  @override
+  set isCharged(bool value) {
+    if (isCharged && value) {
+      isOvercharged = true;
+    } else {
+      _isCharged.value = value;
+    }
+  }
+
   void heal(int amount) {
     health += (amount * healMultiplier).floor();
     sendUpdates();
@@ -86,6 +97,15 @@ class YouController extends PlayerController {
 
   void takeDamage(int amount) {
     health -= (amount * damageMultiplier).floor();
+    sendUpdates();
+  }
+
+  void cool(int amount) {
+    if (isWet) {
+      temperature -= amount * 2;
+    } else {
+      temperature -= amount;
+    }
     sendUpdates();
   }
 

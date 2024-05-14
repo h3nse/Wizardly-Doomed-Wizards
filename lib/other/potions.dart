@@ -69,8 +69,7 @@ class PotionOfCold extends Potion {
 
   @override
   void applyPotion() {
-    youController.temperature -= 15;
-    youController.sendUpdates();
+    youController.cool(15);
   }
 }
 
