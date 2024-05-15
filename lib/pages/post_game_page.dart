@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
+import 'package:wizardly_fucked_wizards/controllers/world_controller.dart';
 import 'package:wizardly_fucked_wizards/pages/game_page/game_page.dart';
 
 class PostGamePage extends StatelessWidget {
@@ -15,6 +16,7 @@ class PostGamePage extends StatelessWidget {
   final PotionController potionController = Get.put(PotionController());
   final YouController youController = Get.put(YouController());
   final OpponentController opponentController = Get.put(OpponentController());
+  final WorldController worldController = Get.put(WorldController());
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class PostGamePage extends StatelessWidget {
                   potionController.reset();
                   youController.reset();
                   opponentController.reset();
+                  worldController.reset();
                   Get.to(() => GamePage(channelName: channelName));
                 },
                 child: const Text('Play Again'))

@@ -113,6 +113,10 @@ class YouController extends PlayerController {
     }
   }
 
+  void heat(int amount) {
+    temperature += amount;
+  }
+
   void setOnDeath(Function onDeath) {
     _onDeath = onDeath;
   }

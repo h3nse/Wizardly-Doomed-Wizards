@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:async/async.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
+import 'package:wizardly_fucked_wizards/controllers/world_controller.dart';
 import 'package:wizardly_fucked_wizards/main.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
 import 'package:wizardly_fucked_wizards/other/player.dart';
@@ -16,7 +19,6 @@ import 'player_view.dart';
 
 // TODO: Show players who is drinking/throwing what.
 // TODO: Connect coldness to mix speed
-// TODO: Add raincloud indicator
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key, required this.channelName});
@@ -30,9 +32,11 @@ class _GamePageState extends State<GamePage> {
   late final RealtimeChannel _broadcastChannel;
   late final Timer updateTimer;
   late final Timer temperatureTimer;
+  late final RestartableTimer weathertimer;
   PotionController potionController = Get.put(PotionController());
   YouController youController = Get.put(YouController());
   OpponentController opponentController = Get.put(OpponentController());
+  WorldController worldController = Get.put(WorldController());
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,13 @@ class _GamePageState extends State<GamePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child:
+                    Obx(() => Text(worldController.currentWeather.toString())),
+              ),
+            ),
             Obx(
               () => Expanded(
                 child: Row(
@@ -74,6 +85,7 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel = supabase.channel(widget.channelName).subscribe();
     youController.setBroadcastChannel(_broadcastChannel);
     youController.setOnDeath(youOnDeath);
+    worldController.setBroadcastChannel(_broadcastChannel);
 
     _broadcastChannel.onBroadcast(
         event: 'opponent_update',
@@ -87,14 +99,30 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel.onBroadcast(
         event: 'opponent_death', callback: (_) => opponentOnDeath());
 
-    updateTimer = Timer.periodic(
+    temperatureTimer = Timer.periodic(
         const Duration(milliseconds: temperatureDelayMs), (timer) {
       temperatureUpdate();
     });
-    temperatureTimer =
+    updateTimer =
         Timer.periodic(const Duration(milliseconds: updateDelayMs), (timer) {
-      worldUpdate();
+      update();
     });
+    final Random random = Random();
+    if (Player().isManager) {
+      weathertimer = RestartableTimer(
+          Duration(
+              seconds: weatherDelayMin +
+                  random.nextInt(weatherDelayMax - weatherDelayMin)), () {
+        weatherEvent();
+      });
+    } else {
+      _broadcastChannel.onBroadcast(
+          event: 'weather_update',
+          callback: (payload) {
+            worldController.currentWeather =
+                Weather.values[payload['currentWeatherIndex']];
+          });
+    }
     super.initState();
   }
 
@@ -103,6 +131,7 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel.unsubscribe();
     updateTimer.cancel();
     temperatureTimer.cancel();
+    weathertimer.cancel();
     super.dispose();
   }
 
@@ -150,6 +179,9 @@ class _GamePageState extends State<GamePage> {
     opponentController.hasRainCloud = updates['hasRainCloud'];
   }
 
+  int currentTemperatureLimitMin = temperatureLimitMin;
+  int currentTemperatureLimitMax = temperatureLimitMax;
+
   void handlePotionAction(int potionId, bool isThrown) {
     if (!isThrown) {
       // Animation
@@ -160,41 +192,39 @@ class _GamePageState extends State<GamePage> {
     // Animation
   }
 
-  void temperatureUpdate() {
-    // Move temperature towards 0
-    if (!youController.isOvercharged &&
-        !(youController.temperature == temperatureLimitMax)) {
-      int tempChange = 1;
-      if (youController.isCharged) tempChange = 2;
-      if (youController.temperature < 0) {
-        youController.temperature += tempChange;
-      }
-      if (youController.temperature > 0) {
-        youController.temperature -= tempChange;
-      }
+  void update() {
+    // Rain effects
+    if (worldController.currentWeather == Weather.rain) {
+      youController.isWet = true;
+    }
 
-      // If your temperature is above a certain point, you catch fire and have have a permanent temperature of 20
-      if (youController.temperature > fireThreshold) {
-        youController.temperature = temperatureLimitMax;
+    // Thunderstorm effects
+    if (worldController.currentWeather == Weather.thunderStorm) {
+      // Math to make sure the chance per 5 seconds is correct
+      const double numberOfIntervals = 5000 / updateDelayMs;
+      final double probabilityPerInterval = 1 -
+          pow((1 - lightningStrikeChance), 1 / numberOfIntervals).toDouble();
+
+      final Random random = Random();
+      if (random.nextDouble() < probabilityPerInterval) {
+        youController.takeDamage(thunderStormDamage);
+        youController.isCharged = true;
       }
     }
 
-    // If your temperature is above a certain point, you take damage
-    if (youController.temperature > heatDamageThreshold) {
-      youController.health--;
-    }
-  }
-
-  void worldUpdate() {
     // If your temperature is below a certain point, you take more damage from physical attacks
     if (youController.temperature < brittleThreshold) {
       youController.damageMultiplier = 2.0;
+    } else {
+      youController.damageMultiplier = 1.0;
     }
 
     // If your temperature is below a certain point, you become frozen
     if (youController.temperature < freezeThreshold) {
       youController.isFrozen = true;
       youController.isWet = false;
+    } else {
+      youController.isFrozen = false;
     }
 
     // If you are charged and wet, you take damage and lose your charge
@@ -210,7 +240,7 @@ class _GamePageState extends State<GamePage> {
 
     // If you are overcharged, your temperature is at max
     if (youController.isOvercharged) {
-      youController.temperature = temperatureLimitMax;
+      youController.temperature = currentTemperatureLimitMax;
     }
 
     // If you're wet and your temperature is above a certain point, your temperature goes down and you become dry
@@ -221,5 +251,65 @@ class _GamePageState extends State<GamePage> {
     }
 
     youController.sendUpdates();
+  }
+
+  void temperatureUpdate() {
+    // Move temperature towards 0
+    if (!youController.isOvercharged &&
+        !(youController.temperature == currentTemperatureLimitMax)) {
+      int target = 0;
+      int changeAmount = 1;
+
+      if (youController.isCharged) changeAmount = 2;
+
+      if (worldController.currentWeather == Weather.blizzard) {
+        currentTemperatureLimitMax = blizzardMaxTemp;
+        target = temperatureLimitMin;
+        changeAmount = 1;
+      } else if (worldController.currentWeather == Weather.heatWave) {
+        currentTemperatureLimitMin = heatwaveMinTemp;
+        target = temperatureLimitMax;
+        changeAmount = 1;
+      } else {
+        currentTemperatureLimitMax = temperatureLimitMax;
+        currentTemperatureLimitMin = temperatureLimitMin;
+      }
+
+      moveTemperatureTowards(target, changeAmount);
+
+      // If your temperature is above a certain point, you catch fire and have have a permanent temperature of 20
+      if (youController.temperature > fireThreshold) {
+        youController.temperature = currentTemperatureLimitMax;
+      }
+    }
+
+    // If your temperature is above a certain point, you take damage
+    if (youController.temperature > heatDamageThreshold) {
+      youController.takeDamage(heatDamage);
+    }
+  }
+
+  void moveTemperatureTowards(int target, int amount) {
+    if (youController.temperature > target) {
+      youController.cool(min(amount, youController.temperature - target));
+    }
+    if (youController.temperature < target) {
+      youController.heat(min(amount, target - youController.temperature));
+    }
+  }
+
+  void weatherEvent() {
+    final Random random = Random();
+    // Add 2 since 'clear' is the first type in the list, and we want to exclude that and .nextInt and .length are off by 1.
+    worldController.currentWeather =
+        Weather.values[2 + random.nextInt(Weather.values.length - 2)];
+
+    Timer(
+        Duration(
+            seconds: weatherDurationMin +
+                random.nextInt(weatherDurationMax - weatherDurationMin)), () {
+      worldController.currentWeather = Weather.clear;
+      weathertimer.reset();
+    });
   }
 }

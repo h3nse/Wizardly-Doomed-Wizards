@@ -75,6 +75,7 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
         callback: (payload) {
           Player().opponentId = payload['recieverId'];
           Player().opponentName = payload['recieverName'];
+          Player().isManager = true;
           supabase.from('players').update({'opponent_id': Player().opponentId});
           // channelName is a combination of the two players' ids
           final String channelName =

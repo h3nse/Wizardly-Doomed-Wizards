@@ -92,14 +92,11 @@ class PotionOfDarkSkies extends Potion {
 
   @override
   void applyPotion() {
-    int counter = 0;
     youController.hasRainCloud = true;
     Timer.periodic(Duration(seconds: secondsPerTick), (timer) {
-      counter++;
-
       youController.isWet = true;
 
-      if (counter == ticks) {
+      if (timer.tick == ticks) {
         timer.cancel();
         youController.hasRainCloud = false;
       }
