@@ -1,14 +1,15 @@
 class Player {
-  static final Player _instance = Player._internal(0, '', 0, '', false);
+  static final Player _instance = Player._internal(0, '', 0, '', false, true);
   int id;
   String name;
   int opponentId;
   String opponentName;
   bool isManager;
+  bool debugMode;
   factory Player() {
     return _instance;
   }
 
-  Player._internal(
-      this.id, this.name, this.opponentId, this.opponentName, this.isManager);
+  Player._internal(this.id, this.name, this.opponentId, this.opponentName,
+      this.isManager, this.debugMode);
 }

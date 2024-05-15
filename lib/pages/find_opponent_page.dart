@@ -156,6 +156,7 @@ class _FindOpponentPageState extends State<FindOpponentPage> {
             ElevatedButton(
                 onPressed: () {
                   if (inputFieldController.text.toLowerCase() == 'debug') {
+                    Player().debugMode = true;
                     Get.to(() => const GamePage(channelName: 'debug'));
                   }
                   challengeOpponent(inputFieldController.text);

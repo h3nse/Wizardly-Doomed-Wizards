@@ -47,11 +47,11 @@ const List ingredientsToPotion = [
   [
     overchargeID,
     [8]
+  ],
+  [
+    9,
+    [1, 3, 7]
   ]
-  // [
-  //   9,
-  //   [1, 2]
-  // ],
   // [
   //   10,
   //   [1, 3]

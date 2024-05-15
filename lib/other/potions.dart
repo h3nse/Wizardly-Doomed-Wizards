@@ -26,6 +26,8 @@ class PotionFactory {
         return LightningInAPotion();
       case overchargeID:
         return Overcharge();
+      case 9:
+        return PotionOfRegeneration();
       default:
         throw Exception("Invalid Potion ID: $id");
     }
@@ -128,7 +130,28 @@ class Overcharge extends Potion {
 
   @override
   void applyPotion() {
-    youController.takeDamage(40);
+    youController.takeDamage(30);
     youController.isCharged = true;
+  }
+}
+
+class PotionOfRegeneration extends Potion {
+  PotionOfRegeneration() : super("Potion of Regeneration");
+
+  final int secondsPerTick = 1;
+  final int ticks = 20;
+
+  @override
+  void applyPotion() {
+    Timer.periodic(
+      Duration(seconds: secondsPerTick),
+      (timer) {
+        youController.heal(1);
+
+        if (timer.tick == ticks) {
+          timer.cancel();
+        }
+      },
+    );
   }
 }

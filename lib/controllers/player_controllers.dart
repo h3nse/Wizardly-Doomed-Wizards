@@ -1,3 +1,5 @@
+import 'package:async/async.dart';
+
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wizardly_fucked_wizards/other/constants.dart';
@@ -61,6 +63,7 @@ class PlayerController extends GetxController {
 class YouController extends PlayerController {
   late RealtimeChannel _broadcastChannel;
   late Function _onDeath;
+  late RestartableTimer wetTimer;
   final RxDouble _damageMultiplier = 1.0.obs;
   final RxDouble _healMultiplier = 1.0.obs;
 
@@ -95,6 +98,20 @@ class YouController extends PlayerController {
     } else {
       _isCharged.value = value;
     }
+  }
+
+  @override
+  set isWet(bool value) {
+    if (value) {
+      wetTimer.reset();
+    }
+    _isWet.value = value;
+  }
+
+  void setup() {
+    wetTimer = RestartableTimer(const Duration(seconds: wetDuration), () {
+      _isWet.value = false;
+    });
   }
 
   void heal(int amount) {

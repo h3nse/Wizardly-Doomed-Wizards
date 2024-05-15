@@ -5,6 +5,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wizardly_fucked_wizards/controllers/ingredient_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/player_controllers.dart';
 import 'package:wizardly_fucked_wizards/controllers/potion_controller.dart';
 import 'package:wizardly_fucked_wizards/controllers/world_controller.dart';
@@ -33,6 +34,7 @@ class _GamePageState extends State<GamePage> {
   late final Timer updateTimer;
   late final Timer temperatureTimer;
   late final RestartableTimer weathertimer;
+  IngredientController ingredientController = Get.put(IngredientController());
   PotionController potionController = Get.put(PotionController());
   YouController youController = Get.put(YouController());
   OpponentController opponentController = Get.put(OpponentController());
@@ -74,6 +76,19 @@ class _GamePageState extends State<GamePage> {
               ),
             ),
             const Expanded(child: PotionView()),
+            (Player().debugMode)
+                ? TextField(
+                    onSubmitted: (input) {
+                      late final int ingredientId;
+                      try {
+                        ingredientId = int.tryParse(input)!;
+                      } catch (_) {
+                        return;
+                      }
+                      ingredientController.ingredients.add(ingredientId);
+                    },
+                  )
+                : Container(),
           ],
         ),
       ),
@@ -85,6 +100,7 @@ class _GamePageState extends State<GamePage> {
     _broadcastChannel = supabase.channel(widget.channelName).subscribe();
     youController.setBroadcastChannel(_broadcastChannel);
     youController.setOnDeath(youOnDeath);
+    youController.setup();
     worldController.setBroadcastChannel(_broadcastChannel);
 
     _broadcastChannel.onBroadcast(
@@ -198,6 +214,16 @@ class _GamePageState extends State<GamePage> {
       youController.isWet = true;
     }
 
+    // Blizzard and Heatwave effects
+    if (worldController.currentWeather == Weather.blizzard) {
+      currentTemperatureLimitMax = blizzardMaxTemp;
+    } else if (worldController.currentWeather == Weather.heatWave) {
+      currentTemperatureLimitMin = heatwaveMinTemp;
+    } else {
+      currentTemperatureLimitMax = temperatureLimitMax;
+      currentTemperatureLimitMin = temperatureLimitMin;
+    }
+
     // Thunderstorm effects
     if (worldController.currentWeather == Weather.thunderStorm) {
       // Math to make sure the chance per 5 seconds is correct
@@ -263,16 +289,11 @@ class _GamePageState extends State<GamePage> {
       if (youController.isCharged) changeAmount = 2;
 
       if (worldController.currentWeather == Weather.blizzard) {
-        currentTemperatureLimitMax = blizzardMaxTemp;
         target = temperatureLimitMin;
         changeAmount = 1;
       } else if (worldController.currentWeather == Weather.heatWave) {
-        currentTemperatureLimitMin = heatwaveMinTemp;
         target = temperatureLimitMax;
         changeAmount = 1;
-      } else {
-        currentTemperatureLimitMax = temperatureLimitMax;
-        currentTemperatureLimitMin = temperatureLimitMin;
       }
 
       moveTemperatureTowards(target, changeAmount);
@@ -281,6 +302,10 @@ class _GamePageState extends State<GamePage> {
       if (youController.temperature > fireThreshold) {
         youController.temperature = currentTemperatureLimitMax;
       }
+    }
+
+    if (youController.isOvercharged) {
+      youController.takeDamage(overchargeTickDamage - 1);
     }
 
     // If your temperature is above a certain point, you take damage
