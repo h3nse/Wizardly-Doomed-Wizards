@@ -1,5 +1,5 @@
 class Player {
-  static final Player _instance = Player._internal(0, '', 0, '', false, true);
+  static final Player _instance = Player._internal(0, '', 0, '', false, false);
   int id;
   String name;
   int opponentId;

@@ -90,7 +90,7 @@ class PotionOfDarkSkies extends Potion {
   PotionOfDarkSkies() : super("Potion of Dark Skies");
 
   final int secondsPerTick = 1;
-  final int ticks = 5;
+  final int ticks = 4;
 
   @override
   void applyPotion() {
