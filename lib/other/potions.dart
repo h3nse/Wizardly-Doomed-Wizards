@@ -73,7 +73,7 @@ class PotionOfHeat extends Potion {
 
   @override
   void applyPotion() {
-    youController.temperature += 15;
+    youController.heat(15);
   }
 }
 

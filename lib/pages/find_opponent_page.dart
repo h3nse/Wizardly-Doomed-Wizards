@@ -18,7 +18,7 @@ class OpponentChallengePage extends StatefulWidget {
 
 class _OpponentChallengePageState extends State<OpponentChallengePage> {
   OpponentPageState _state = OpponentPageState.findOpponent;
-  late final RealtimeChannel stateChannel;
+  late final RealtimeChannel lobbyChannel;
   String _challengerName = '';
   int _challengerId = 0;
 
@@ -29,12 +29,12 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
       case OpponentPageState.findOpponent:
         page = FindOpponentPage(
           changeState: changeState,
-          stateChannel: stateChannel,
+          stateChannel: lobbyChannel,
         );
         break;
       case OpponentPageState.outgoingChallenge:
         page = OutgoingChallengePage(
-            changeState: changeState, stateChannel: stateChannel);
+            changeState: changeState, stateChannel: lobbyChannel);
         break;
       case OpponentPageState.incomingChallenge:
         page = IncomingChallengePage(
@@ -42,7 +42,7 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
           challengerId: _challengerId,
           challengerName: _challengerName,
           reset: reset,
-          stateChannel: stateChannel,
+          stateChannel: lobbyChannel,
         );
     }
     return page;
@@ -50,8 +50,8 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
 
   @override
   void initState() {
-    stateChannel = supabase.channel('lobby').subscribe();
-    stateChannel.onBroadcast(
+    lobbyChannel = supabase.channel('lobby').subscribe();
+    lobbyChannel.onBroadcast(
         event: 'incoming_challenge',
         callback: (payload) => {
               if (payload['recieverId'] == Player().id)
@@ -60,17 +60,17 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
                       payload['challengerId'], payload['challengerName'])
                 }
             });
-    stateChannel.onBroadcast(
+    lobbyChannel.onBroadcast(
         event: 'challenge_cancelled', callback: (_) => reset());
-    stateChannel.onBroadcast(
+    lobbyChannel.onBroadcast(
         event: 'challenge_status',
         callback: (payload) => {
               if (payload['challengerId'] == Player().id)
                 {handleChallengeStatus(payload['challenge_status'])}
             });
-    stateChannel.onBroadcast(
+    lobbyChannel.onBroadcast(
         event: 'challenge_rejected', callback: (payload) => reset());
-    stateChannel.onBroadcast(
+    lobbyChannel.onBroadcast(
         event: 'challenge_accepted',
         callback: (payload) {
           Player().opponentId = payload['recieverId'];
@@ -89,13 +89,13 @@ class _OpponentChallengePageState extends State<OpponentChallengePage> {
 
   void handleIncomingChallenge(int challengerId, String challengerName) {
     if (_state != OpponentPageState.findOpponent) {
-      stateChannel.sendBroadcastMessage(event: 'challenge_status', payload: {
+      lobbyChannel.sendBroadcastMessage(event: 'challenge_status', payload: {
         'challengerId': challengerId,
         'challenge_status': 'denied'
       });
       return;
     }
-    stateChannel.sendBroadcastMessage(
+    lobbyChannel.sendBroadcastMessage(
         event: 'challenge_status',
         payload: {'challengerId': challengerId, 'challenge_status': 'ok'});
 

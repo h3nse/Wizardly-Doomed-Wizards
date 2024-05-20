@@ -325,9 +325,9 @@ class _GamePageState extends State<GamePage> {
 
   void weatherEvent() {
     final Random random = Random();
-    // Add 2 since 'clear' is the first type in the list, and we want to exclude that and .nextInt and .length are off by 1.
+    // Add 1 since 'clear' is the first type in the list.
     worldController.currentWeather =
-        Weather.values[2 + random.nextInt(Weather.values.length - 2)];
+        Weather.values[1 + random.nextInt(Weather.values.length - 1)];
 
     Timer(
         Duration(
