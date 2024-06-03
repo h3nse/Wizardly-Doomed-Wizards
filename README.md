@@ -72,7 +72,7 @@ Ingredients:
 
 ### Lightning in a Potion
 
-Removes the creators charge when created, channeling it into a potion
+Removes the creators charge when created, channeling it into a potion.
 When used, the recipient becomes charged
 
 Ingredients:
@@ -80,7 +80,7 @@ Ingredients:
 
 ### Overcharge
 
-Removes the creators overcharge when created, channeling it into a potion
+Removes the creators overcharge when created, channeling it into a potion.
 When used, the recipient takes a lot of damage and becomes charged
 
 Ingredients:
@@ -89,7 +89,7 @@ Ingredients:
 ## Conditions
 ### Temperature
 
-A low temperature makes you frozen and more susceptible to damage
+A low temperature makes you frozen and more susceptible to damage.
 A high temperature makes you take damage, and in some cases catch fire
 
 ### Charge
@@ -99,13 +99,13 @@ you also take damage and lose your charge if you become wet
 
 ### Overcharge
 
-You become overcharged if you gain charge while already charged
-While overcharged your temperature is at max, and you take more damage from it
+You become overcharged if you gain charge while already charged.
+While overcharged your temperature is at max, and you take more damage from it.
 You also take a lot of damage and lose your charge if you become wet
 
 ### Wetness
 
-While wet you are more susceptible to cold
+While wet you are more susceptible to cold.
 If you're too hot, you get cooled down and become dry
 
 ## Members
