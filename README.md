@@ -25,50 +25,50 @@ Ingredients:
 Damages the recipient a small amount
 
 Ingredients:
-    Boom Berries
-    Lingering Algae
+- Boom Berries
+- Lingering Algae
 
 ### Potion of Heat
 
 Increases the recipient's temperature
 
 Ingredients:
-    Boom Berries
-    Fire Bloom
+- Boom Berries
+- Fire Bloom
 
 ### Potion of Cold
 
 Decreases the recipient's temperature
 
 Ingredients:
-    Petrified Rose Petal
-    Frost Flake
+- Petrified Rose Petal
+- Frost Flake
 
 ### Potion of Dark Skies
 
 Forms a rain cloud above the recipient, making them wet
 
 Ingredients:
-    Puff-Root
-    Midnight Moon Dew
+- Puff-Root
+- Midnight Moon Dew
 
 ### Potion of Thunder
 
 Damages the recipient and makes them charged
 
 Ingredients:
-    Boom Berries
-    Puff-Root
-    Lightning in a Bottle
+- Boom Berries
+- Puff-Root
+- Lightning in a Bottle
 
 ### Potion of Regeneration
 
 Heals the recipient's over time
 
 Ingredients:
-    Petrified Rose Petal
-    Lingering Algae
-    Midnight Moon Dew
+- Petrified Rose Petal
+- Lingering Algae
+- Midnight Moon Dew
 
 ### Lightning in a Potion
 
@@ -76,12 +76,15 @@ Removes the creators charge when created, channeling it into a potion
 When used, the recipient becomes charged
 
 Ingredients:
-    Lightning in a Bottle (While Charged or Overcharged)
+- Lightning in a Bottle (While Charged)
 
 ### Overcharge
 
 Removes the creators overcharge when created, channeling it into a potion
 When used, the recipient takes a lot of damage and becomes charged
+
+Ingredients:
+- Lightning in a Bottle (While Overcharged)
 
 ## Conditions
 ### Temperature
