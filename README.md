@@ -13,19 +13,23 @@ Check the next sections for potion descriptions, recipes and conditions.
 
 ### Potions and Recipes
 - Potion of Healing
+
 Heals the recipient a small amount.
 
 Ingredients:
-    Petrified Rose Petal
-    Lingering Algae
+- Petrified Rose Petal
+- Lingering Algae
 
 - Exploding Potion
+
 Damages the recipient a small amount
+
 Ingredients:
     Boom Berries
     Lingering Algae
 
 - Potion of Heat
+
 Increases the recipient's temperature
 
 Ingredients:
@@ -33,6 +37,7 @@ Ingredients:
     Fire Bloom
 
 - Potion of Cold
+
 Decreases the recipient's temperature
 
 Ingredients:
@@ -40,6 +45,7 @@ Ingredients:
     Frost Flake
 
 - Potion of Dark Skies
+
 Forms a rain cloud above the recipient, making them wet
 
 Ingredients:
@@ -47,6 +53,7 @@ Ingredients:
     Midnight Moon Dew
 
 - Potion of Thunder
+
 Damages the recipient and makes them charged
 
 Ingredients:
@@ -55,6 +62,7 @@ Ingredients:
     Lightning in a Bottle
 
 - Potion of Regeneration
+
 Heals the recipient's over time
 
 Ingredients:
@@ -63,6 +71,7 @@ Ingredients:
     Midnight Moon Dew
 
 - Lightning in a Potion
+
 Removes the creators charge when created, channeling it into a potion
 When used, the recipient becomes charged
 
@@ -70,24 +79,29 @@ Ingredients:
     Lightning in a Bottle (While Charged or Overcharged)
 
 - Overcharge
+
 Removes the creators overcharge when created, channeling it into a potion
 When used, the recipient takes a lot of damage and becomes charged
 
 ### Conditions
 - Temperature
+
 A low temperature makes you frozen and more susceptible to damage
 A high temperature makes you take damage, and in some cases catch fire
 
 - Charge
+
 While charged your temperature returns to normal twice as fast,
 you also take damage and lose your charge if you become wet
 
 - Overcharge
+
 You become overcharged if you gain charge while already charged
 While overcharged your temperature is at max, and you take more damage from it
 You also take a lot of damage and lose your charge if you become wet
 
 - Wetness
+
 While wet you are more susceptible to cold
 If you're too hot, you get cooled down and become dry
 
