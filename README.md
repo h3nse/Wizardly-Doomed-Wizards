@@ -11,8 +11,8 @@ Scan the QR-codes on the pdf to add ingredients to your potion.
 Check the next sections for potion descriptions, recipes and conditions.
 
 
-### Potions and Recipes
-- Potion of Healing
+## Potions and Recipes
+### Potion of Healing
 
 Heals the recipient a small amount.
 
@@ -20,7 +20,7 @@ Ingredients:
 - Petrified Rose Petal
 - Lingering Algae
 
-- Exploding Potion
+### Exploding Potion
 
 Damages the recipient a small amount
 
@@ -28,7 +28,7 @@ Ingredients:
     Boom Berries
     Lingering Algae
 
-- Potion of Heat
+### Potion of Heat
 
 Increases the recipient's temperature
 
@@ -36,7 +36,7 @@ Ingredients:
     Boom Berries
     Fire Bloom
 
-- Potion of Cold
+### Potion of Cold
 
 Decreases the recipient's temperature
 
@@ -44,7 +44,7 @@ Ingredients:
     Petrified Rose Petal
     Frost Flake
 
-- Potion of Dark Skies
+### Potion of Dark Skies
 
 Forms a rain cloud above the recipient, making them wet
 
@@ -52,7 +52,7 @@ Ingredients:
     Puff-Root
     Midnight Moon Dew
 
-- Potion of Thunder
+### Potion of Thunder
 
 Damages the recipient and makes them charged
 
@@ -61,7 +61,7 @@ Ingredients:
     Puff-Root
     Lightning in a Bottle
 
-- Potion of Regeneration
+### Potion of Regeneration
 
 Heals the recipient's over time
 
@@ -70,7 +70,7 @@ Ingredients:
     Lingering Algae
     Midnight Moon Dew
 
-- Lightning in a Potion
+### Lightning in a Potion
 
 Removes the creators charge when created, channeling it into a potion
 When used, the recipient becomes charged
@@ -78,29 +78,29 @@ When used, the recipient becomes charged
 Ingredients:
     Lightning in a Bottle (While Charged or Overcharged)
 
-- Overcharge
+### Overcharge
 
 Removes the creators overcharge when created, channeling it into a potion
 When used, the recipient takes a lot of damage and becomes charged
 
-### Conditions
-- Temperature
+## Conditions
+### Temperature
 
 A low temperature makes you frozen and more susceptible to damage
 A high temperature makes you take damage, and in some cases catch fire
 
-- Charge
+### Charge
 
 While charged your temperature returns to normal twice as fast,
 you also take damage and lose your charge if you become wet
 
-- Overcharge
+### Overcharge
 
 You become overcharged if you gain charge while already charged
 While overcharged your temperature is at max, and you take more damage from it
 You also take a lot of damage and lose your charge if you become wet
 
-- Wetness
+### Wetness
 
 While wet you are more susceptible to cold
 If you're too hot, you get cooled down and become dry
